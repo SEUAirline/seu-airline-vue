@@ -66,8 +66,11 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
-.env.*
+# 注意: .env.development 和 .env.production 不包含敏感信息，可以提交
+.env.local
+.env.*.local
+!.env.development
+!.env.production
 !.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -125,6 +128,41 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IDE - WebStorm/IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
 # yarn v3
 .pnp.*
 .yarn/*
@@ -137,3 +175,29 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+
+# Lock files (可选：如果团队使用不同的包管理器，可能需要忽略某些锁文件)
+# 建议保留 package-lock.json 以确保依赖版本一致
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
