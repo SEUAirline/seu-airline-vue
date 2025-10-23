@@ -11,36 +11,28 @@
 npm install -D vite-plugin-mock mockjs
 ```
 
-- **vite-plugin-mock:** Vite 的 Mock 数据插件
+ GET /api/flight/search
 - **mockjs:** 生成随机数据的工具库
 
 ---
 
 ## ⚙️ 配置说明
-
+ GET /api/flight/:id
 ### 1. Vite 配置
 
 **文件:** `vite.config.ts`
 
-```typescript
+ GET /api/airport/list
 import { viteMockServe } from 'vite-plugin-mock'
 
 export default defineConfig({
   plugins: [
-    vue(),
+ GET /api/flight/popular
     viteMockServe({
       mockPath: 'mock',  // Mock 文件目录
       enable: true,      // 启用 Mock
     })
-  ],
-  // ...
-})
 ```
-
-### 2. Mock 文件结构
-
-```
-mock/
 ├── flight.ts    # 航班相关 Mock 数据
 ├── user.ts      # 用户相关 Mock 数据
 └── order.ts     # 订单相关 Mock 数据
@@ -50,35 +42,34 @@ mock/
 
 ## 🛫 航班 Mock API
 
-**文件:** `mock/flight.ts`
+ POST /api/auth/register
 
 ### 可用接口
 
 #### 1. 搜索航班
 ```
-GET /api/v1/flight/search
+ POST /api/auth/login
 参数: departureCity, arrivalCity, departureDate
 ```
 
 **功能:**
 - 自动生成 15-30 个随机航班
-- 包含多个航空公司
+ GET /api/user/profile
 - 随机价格、时间、座位数
 - 支持不同的航班状态
 
 #### 2. 获取航班详情
 ```
-GET /api/v1/flight/:id
+ PUT /api/user/profile
 ```
 
 **功能:**
 - 根据 ID 返回单个航班详情
 
-#### 3. 获取机场列表
+ PUT /api/user/password
 ```
 GET /api/v1/airport/list
 ```
-
 **功能:**
 - 返回 10 个城市的机场信息
 - 包含机场代码、名称、城市
@@ -88,39 +79,37 @@ GET /api/v1/airport/list
 GET /api/v1/flight/popular
 ```
 
-**功能:**
+ POST /api/orders
 - 返回 5 条热门航线
 
 ### Mock 数据特点
 
-**航空公司:**
-- 中国国际航空 (CA)
 - 中国东方航空 (MU)
 - 中国南方航空 (CZ)
 - 海南航空 (HU)
-- 厦门航空 (MF)
+ GET /api/orders
 - 四川航空 (SC)
 - 深圳航空 (ZH)
 
 **支持的城市:**
 - 北京、上海、广州、深圳、成都
-- 杭州、西安、重庆、厦门、南京
+ GET /api/orders/:id
 
 **航班数据包含:**
 - 航班号（自动生成）
 - 起飞/到达时间（随机生成）
-- 飞行时长（1-4小时）
+ PUT /api/orders/:id/cancel
 - 价格（400-2000元）
 - 座位数（经济舱、商务舱、头等舱）
 - 航班状态（准点/延误）
 - 机型（A320、B737等）
-
+ PUT /api/orders/:id/pay
 ---
 
 ## 👤 用户 Mock API
 
 **文件:** `mock/user.ts`
-
+ POST /api/orders/:id/refund
 ### 可用接口
 
 #### 1. 用户注册

@@ -87,10 +87,10 @@ npm install -D vite-plugin-mock mockjs
 **代码行数:** ~220 行
 
 **Mock API:**
-- ✅ GET /api/v1/flight/search - 搜索航班
-- ✅ GET /api/v1/flight/:id - 航班详情
-- ✅ GET /api/v1/airport/list - 机场列表
-- ✅ GET /api/v1/flight/popular - 热门航线
+- ✅ GET /api/flight/search - 搜索航班
+- ✅ GET /api/flight/:id - 航班详情
+- ✅ GET /api/airport/list - 机场列表
+- ✅ GET /api/flight/popular - 热门航线
 
 **数据特点:**
 - 自动生成 15-30 个随机航班
@@ -102,11 +102,11 @@ npm install -D vite-plugin-mock mockjs
 **代码行数:** ~180 行
 
 **Mock API:**
-- ✅ POST /api/v1/auth/register - 用户注册
-- ✅ POST /api/v1/auth/login - 用户登录
-- ✅ GET /api/v1/user/profile - 获取用户信息
-- ✅ PUT /api/v1/user/profile - 更新用户信息
-- ✅ PUT /api/v1/user/password - 修改密码
+- ✅ POST /api/auth/register - 用户注册
+- ✅ POST /api/auth/login - 用户登录
+- ✅ GET /api/user/profile - 获取用户信息
+- ✅ PUT /api/user/profile - 更新用户信息
+- ✅ PUT /api/user/password - 修改密码
 
 **测试账号:**
 - 用户名: user001
@@ -116,12 +116,12 @@ npm install -D vite-plugin-mock mockjs
 **代码行数:** ~160 行
 
 **Mock API:**
-- ✅ POST /api/v1/order - 创建订单
-- ✅ GET /api/v1/order/list - 订单列表
-- ✅ GET /api/v1/order/:id - 订单详情
-- ✅ PUT /api/v1/order/:id/cancel - 取消订单
-- ✅ POST /api/v1/order/:id/pay - 支付订单
-- ✅ POST /api/v1/order/:id/refund - 申请退票
+- ✅ POST /api/orders - 创建订单
+- ✅ GET /api/orders - 订单列表
+- ✅ GET /api/orders/:id - 订单详情
+- ✅ PUT /api/orders/:id/cancel - 取消订单
+- ✅ PUT /api/orders/:id/pay - 支付订单
+- ✅ POST /api/orders/:id/refund - 申请退票
 
 ---
 

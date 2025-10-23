@@ -2,32 +2,40 @@ import { MockMethod } from 'vite-plugin-mock'
 import Mock from 'mockjs'
 
 // 航空公司列表
-const airlines = ['中国国际航空', '中国东方航空', '中国南方航空', '海南航空', '厦门航空', '四川航空', '深圳航空']
+const airlines = [
+  '中国国际航空',
+  '中国东方航空',
+  '中国南方航空',
+  '海南航空',
+  '厦门航空',
+  '四川航空',
+  '深圳航空'
+]
 
 // 机场数据
 const airports = {
-  '北京': ['PEK', '首都国际机场'],
-  '上海': ['PVG', '浦东国际机场'],
-  '广州': ['CAN', '白云国际机场'],
-  '深圳': ['SZX', '宝安国际机场'],
-  '成都': ['CTU', '双流国际机场'],
-  '杭州': ['HGH', '萧山国际机场'],
-  '西安': ['XIY', '咸阳国际机场'],
-  '重庆': ['CKG', '江北国际机场'],
-  '厦门': ['XMN', '高崎国际机场'],
-  '南京': ['NKG', '禄口国际机场']
+  北京: ['PEK', '首都国际机场'],
+  上海: ['PVG', '浦东国际机场'],
+  广州: ['CAN', '白云国际机场'],
+  深圳: ['SZX', '宝安国际机场'],
+  成都: ['CTU', '双流国际机场'],
+  杭州: ['HGH', '萧山国际机场'],
+  西安: ['XIY', '咸阳国际机场'],
+  重庆: ['CKG', '江北国际机场'],
+  厦门: ['XMN', '高崎国际机场'],
+  南京: ['NKG', '禄口国际机场']
 }
 
 // 生成航班号
 function generateFlightNo(airline: string): string {
   const codes: Record<string, string> = {
-    '中国国际航空': 'CA',
-    '中国东方航空': 'MU',
-    '中国南方航空': 'CZ',
-    '海南航空': 'HU',
-    '厦门航空': 'MF',
-    '四川航空': 'SC',
-    '深圳航空': 'ZH'
+    中国国际航空: 'CA',
+    中国东方航空: 'MU',
+    中国南方航空: 'CZ',
+    海南航空: 'HU',
+    厦门航空: 'MF',
+    四川航空: 'SC',
+    深圳航空: 'ZH'
   }
   const code = codes[airline] || 'CA'
   const number = Mock.Random.integer(1000, 9999)
@@ -44,15 +52,18 @@ function generateTime(baseDate: string, hourRange: [number, number]): string {
 }
 
 // 生成飞行时长
-function calculateDuration(departureTime: string, hours: number): { arrivalTime: string; duration: string } {
+function calculateDuration(
+  departureTime: string,
+  hours: number
+): { arrivalTime: string; duration: string } {
   const departure = new Date(departureTime)
   const minutes = Mock.Random.integer(0, 59)
   const totalMinutes = hours * 60 + minutes
   const arrival = new Date(departure.getTime() + totalMinutes * 60000)
-  
+
   const durationHours = Math.floor(totalMinutes / 60)
   const durationMinutes = totalMinutes % 60
-  
+
   return {
     arrivalTime: arrival.toISOString(),
     duration: `${durationHours}小时${durationMinutes}分钟`
@@ -71,12 +82,12 @@ function generateFlights(params: any) {
     const departureTime = generateTime(departureDate, [6, 22])
     const flightHours = Mock.Random.integer(1, 4)
     const { arrivalTime, duration } = calculateDuration(departureTime, flightHours)
-    
+
     const basePrice = Mock.Random.integer(400, 2000)
     const economySeats = Mock.Random.integer(0, 150)
     const businessSeats = Mock.Random.integer(0, 30)
     const firstClassSeats = Mock.Random.integer(0, 10)
-    
+
     const [depCode, depAirport] = airports[departureCity] || ['UNK', '未知机场']
     const [arrCode, arrAirport] = airports[arrivalCity] || ['UNK', '未知机场']
 
@@ -107,11 +118,11 @@ function generateFlights(params: any) {
 export default [
   // 搜索航班
   {
-    url: '/api/v1/flight/search',
+    url: '/mock/api/flight/search',
     method: 'get',
     response: (request: any) => {
       const { departureCity, arrivalCity, departureDate } = request.query
-      
+
       if (!departureCity || !arrivalCity || !departureDate) {
         return {
           code: 400,
@@ -134,7 +145,7 @@ export default [
 
   // 获取航班详情
   {
-    url: '/api/v1/flight/:id',
+    url: '/mock/api/flight/:id',
     method: 'get',
     response: (request: any) => {
       const { id } = request.params
@@ -148,7 +159,7 @@ export default [
       const departureDate = new Date().toISOString().split('T')[0]
       const departureTime = generateTime(departureDate, [6, 22])
       const { arrivalTime, duration } = calculateDuration(departureTime, Mock.Random.integer(1, 4))
-      
+
       const [depCode, depAirport] = airports[departureCity]
       const [arrCode, arrAirport] = airports[arrivalCity]
 
@@ -181,7 +192,7 @@ export default [
 
   // 获取机场列表
   {
-    url: '/api/v1/airport/list',
+    url: '/mock/api/airport/list',
     method: 'get',
     response: () => {
       const airportList = Object.entries(airports).map(([city, [code, name]]) => ({
@@ -201,7 +212,7 @@ export default [
 
   // 获取热门航线
   {
-    url: '/api/v1/flight/popular',
+    url: '/mock/api/flight/popular',
     method: 'get',
     response: () => {
       const routes = [

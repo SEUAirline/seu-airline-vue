@@ -9,7 +9,7 @@ export default defineConfig({
     vue(),
     viteMockServe({
       mockPath: 'mock',
-      enable: true,
+      enable: true
     })
   ],
   resolve: {
@@ -19,7 +19,20 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    open: true
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        ws: true
+      },
+      '/auth': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   build: {
     outDir: 'dist',

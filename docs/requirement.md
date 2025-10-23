@@ -10,12 +10,12 @@
 
 ## 抢购子系统（Seckill）  
 ### SEC-API-01 库存查询  
-GET /api/v1/seckill/stock/{flightId}/{depDate}  
+GET /api/seckill/stock/{flightId}/{depDate}  
 Resp: {“total”:128,“available”:45,“version”:347}  
 验收：wrk -t10 -c100 压测 99-th < 20 ms；Redis key 命中≥99%。  
 
 ### SEC-API-02 获取排队号（令牌）  
-POST /api/v1/seckill/token  
+POST /api/seckill/token  
 Body: {flightId, depDate, userId(脱敏)}  
 返回：{token:“ST-xxx”, waitNo:1837, estWaitSec:12}  
 逻辑：  
@@ -36,7 +36,7 @@ b. 写订单表（MySQL）状态=LOCKED；成功则 Redis DECR；失败写回 Ka
 - retry 队列最终为空。  
 
 ### SEC-API-04 结果轮询  
-GET /api/v1/seckill/result/{token}  
+GET /api/seckill/result/{token}  
 缓存：Redis key ttl=60s，value={orderNo, status(SUCCESS/FAIL/WAITING)}  
 前端策略：长轮询 5 s 超时，指数退避最多 6 次。  
 
@@ -68,7 +68,7 @@ Job name: FlightPriceClean
 输出：Kafka topic=flight.price.clean  
 
 ### CRAWL-API-02 价格历史读接口  
-GET /api/v1/price/hist?flightId=xx&start=2025-10-01&end=2025-10-07  
+GET /api/price/hist?flightId=xx&start=2025-10-01&end=2025-10-07  
 返回：Array<{cabin,price,ts}>  
 缓存：Redis TS.ADD 使用 RedisTimeSeries，ttl=7 天，降采样 1 h。  
 
@@ -87,14 +87,14 @@ Signature: sigmoid(score)=P(order|context)
 SLA: 99-th < 60 ms, QPS 2 k  
 
 ### PUSH-API-02 推荐列表  
-GET /api/v1/recommend?userId=xx&scene=search_not_order  
+GET /api/recommend?userId=xx&scene=search_not_order  
 返回：Array<{itemId,itemType,score,reason}>  
 业务规则：  
 - 过滤用户已购；  
 - 多样性：Top10 至少 3 个不同类目（保险/休息室/行李）。  
 
 ### PUSH-API-03 消息发送  
-POST /api/v1/push/send  
+POST /api/push/send  
 Body: {userId,title,body,deeplink,campaignId}  
 通道策略：  
 1. 若 app 安装且 pushToken 有效 → 走厂商通道；  
@@ -122,7 +122,7 @@ Hooks: useBeforeUnload + Visibility API
 断网重连：event-source 自动重连，带 Last-Event-ID。  
 
 ### WEB-API-01 航班列表接口（分页+缓存）  
-GET /api/v1/flight/list  
+GET /api/flight/list  
 请求：{from,to,depDate,cabin,page,size=20}  
 缓存：CDN 1 min，etag=hash(body)  
 

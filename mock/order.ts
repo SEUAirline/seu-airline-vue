@@ -17,7 +17,7 @@ function generateOrderNo(): string {
 export default [
   // 创建订单
   {
-    url: '/api/v1/order',
+    url: '/mock/api/order',
     method: 'post',
     response: (request: any) => {
       const { flightId, passengers, contactName, contactPhone, totalPrice } = request.body
@@ -55,13 +55,13 @@ export default [
 
   // 获取订单列表
   {
-    url: '/api/v1/order/list',
+    url: '/mock/api/order/list',
     method: 'get',
     response: (request: any) => {
       const { status, page = 1, pageSize = 10 } = request.query
 
       let filteredOrders = [...orders]
-      
+
       if (status) {
         filteredOrders = filteredOrders.filter(o => o.status === parseInt(status))
       }
@@ -87,7 +87,7 @@ export default [
 
   // 获取订单详情
   {
-    url: '/api/v1/order/:id',
+    url: '/mock/api/order/:id',
     method: 'get',
     response: (request: any) => {
       const { id } = request.params
@@ -113,7 +113,7 @@ export default [
 
   // 取消订单
   {
-    url: '/api/v1/order/:id/cancel',
+    url: '/mock/api/order/:id/cancel',
     method: 'put',
     response: (request: any) => {
       const { id } = request.params
@@ -151,7 +151,7 @@ export default [
 
   // 支付订单
   {
-    url: '/api/v1/order/:id/pay',
+    url: '/mock/api/order/:id/pay',
     method: 'post',
     response: (request: any) => {
       const { id } = request.params
@@ -196,7 +196,7 @@ export default [
 
   // 申请退票
   {
-    url: '/api/v1/order/:id/refund',
+    url: '/mock/api/order/:id/refund',
     method: 'post',
     response: (request: any) => {
       const { id } = request.params

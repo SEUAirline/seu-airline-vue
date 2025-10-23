@@ -5,17 +5,23 @@ import { request } from './client'
 export const flightApi = {
   // 获取机场列表
   getAirports(): Promise<ApiResponse<Airport[]>> {
-    return request.get('/v1/airport/list')
+    return request.get('/api/airport/list')
   },
 
   // 搜索航班
   searchFlights(params: FlightSearchParams): Promise<ApiResponse<Flight[]>> {
-    return request.get('/v1/flight/search', { params })
+    // 转换参数格式以匹配后端API
+    const searchParams = {
+      departureCity: params.departureCity,
+      arrivalCity: params.arrivalCity,
+      departureDate: params.departureDate
+    }
+    return request.get('/api/flight/search', { params: searchParams })
   },
 
   // 根据ID获取航班详情
   getFlightById(flightId: string): Promise<ApiResponse<Flight>> {
-    return request.get(`/v1/flight/${flightId}`)
+    return request.get(`/api/flight/${flightId}`)
   },
 
   // 获取所有航班（管理员）
@@ -23,7 +29,7 @@ export const flightApi = {
     // 获取所有航班数据
     const response = await fetch('/data/flights.json')
     const flights = await response.json()
-    
+
     return {
       success: true,
       data: flights
@@ -33,7 +39,7 @@ export const flightApi = {
   // 添加航班（管理员）
   async addFlight(flight: Partial<Flight>): Promise<ApiResponse<Flight>> {
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     const newFlight: Flight = {
       id: 'FL' + Date.now(),
       flightNo: flight.flightNo || '',
@@ -53,7 +59,7 @@ export const flightApi = {
       status: flight.status || 'scheduled',
       aircraft: flight.aircraft
     }
-    
+
     return {
       success: true,
       data: newFlight,
@@ -64,7 +70,7 @@ export const flightApi = {
   // 更新航班（管理员）
   async updateFlight(_flightId: string, data: Partial<Flight>): Promise<ApiResponse<Flight>> {
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     return {
       success: true,
       data: data as Flight,
@@ -75,7 +81,7 @@ export const flightApi = {
   // 删除航班（管理员）
   async deleteFlight(_flightId: string): Promise<ApiResponse> {
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     return {
       success: true,
       message: '航班删除成功'

@@ -1,30 +1,38 @@
 import type { ApiResponse } from '@/types/api'
 import type { Order, OrderCreateParams, PaymentParams } from '@/types/order'
-import { mockApi } from './mock'
+import { request } from './client'
 
 export const orderApi = {
   // 创建订单
   createOrder(params: OrderCreateParams): Promise<ApiResponse<Order>> {
-    return mockApi.createOrder(params)
+    // 转换为后端期望的格式
+    const orderRequest = {
+      items: params.passengers.map(passenger => ({
+        seatId: null, // 需要先选座位，这里暂时为null
+        passengerName: passenger.name,
+        passengerIdCard: passenger.idCard
+      }))
+    }
+    return request.post('/api/orders', orderRequest)
   },
 
   // 获取用户订单列表
   getUserOrders(): Promise<ApiResponse<Order[]>> {
-    return mockApi.getUserOrders()
+    return request.get('/api/orders')
   },
 
   // 根据ID获取订单详情
   getOrderById(orderId: string): Promise<ApiResponse<Order>> {
-    return mockApi.getOrderById(orderId)
+    return request.get(`/api/orders/${orderId}`)
   },
 
   // 支付订单
   payOrder(params: PaymentParams): Promise<ApiResponse> {
-    return mockApi.payOrder(params)
+    return request.put(`/api/orders/${params.orderId}/pay`)
   },
 
   // 取消订单
   cancelOrder(orderId: string): Promise<ApiResponse> {
-    return mockApi.cancelOrder(orderId)
+    return request.put(`/api/orders/${orderId}/cancel`)
   }
 }

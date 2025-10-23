@@ -1,16 +1,25 @@
 import type { ApiResponse } from '@/types/api'
 import type { User, LoginForm, RegisterForm } from '@/types/user'
-import { mockApi } from './mock'
+import { request } from './client'
 
 export const userApi = {
   // 用户登录
   login(loginForm: LoginForm): Promise<ApiResponse<{ user: User; token: string }>> {
-    return mockApi.login(loginForm)
+    return request.post('/api/auth/login', loginForm)
   },
 
   // 用户注册
   register(registerForm: RegisterForm): Promise<ApiResponse<{ user: User; token: string }>> {
-    return mockApi.register(registerForm)
+    // 构造后端期望的格式
+    const registerData = {
+      username: registerForm.username,
+      password: registerForm.password,
+      email: registerForm.email,
+      phone: registerForm.phone,
+      idCard: registerForm.idCard,
+      fullName: registerForm.realName
+    }
+    return request.post('/api/auth/register', registerData)
   },
 
   // 获取当前用户信息
@@ -23,20 +32,20 @@ export const userApi = {
   async updateProfile(_userId: number | string, data: Partial<User>): Promise<ApiResponse<User>> {
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     const userStr = localStorage.getItem('user')
     if (userStr) {
       const user = JSON.parse(userStr)
       const updatedUser = { ...user, ...data }
       localStorage.setItem('user', JSON.stringify(updatedUser))
-      
+
       return {
         success: true,
         data: updatedUser,
         message: '更新成功'
       }
     }
-    
+
     return {
       success: false,
       message: '用户不存在'

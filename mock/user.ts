@@ -24,7 +24,7 @@ let currentToken = ''
 export default [
   // 用户注册
   {
-    url: '/api/v1/auth/register',
+    url: '/mock/api/auth/register',
     method: 'post',
     response: (request: any) => {
       const { username, password, email, phone } = request.body
@@ -71,13 +71,13 @@ export default [
 
   // 用户登录
   {
-    url: '/api/v1/auth/login',
+    url: '/mock/api/auth/login',
     method: 'post',
     response: (request: any) => {
       const { username, password } = request.body
 
       const user = users.find(u => u.username === username && u.password === password)
-      
+
       if (!user) {
         return {
           code: 401,
@@ -113,7 +113,7 @@ export default [
 
   // 获取用户信息
   {
-    url: '/api/v1/user/profile',
+    url: '/mock/api/user/profile',
     method: 'get',
     response: (request: any) => {
       const token = request.headers.authorization
@@ -150,7 +150,7 @@ export default [
 
   // 更新用户信息
   {
-    url: '/api/v1/user/profile',
+    url: '/mock/api/user/profile',
     method: 'put',
     response: (request: any) => {
       const token = request.headers.authorization
@@ -188,7 +188,7 @@ export default [
 
   // 修改密码
   {
-    url: '/api/v1/user/password',
+    url: '/mock/api/user/password',
     method: 'put',
     response: (request: any) => {
       const token = request.headers.authorization
