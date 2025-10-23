@@ -6,9 +6,11 @@
         <div class="flex items-center gap-4 mb-4">
           <!-- 航空公司 Logo -->
           <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <span class="text-blue-600 font-bold text-sm">{{ flight.airline.substring(0, 2) }}</span>
+            <span class="text-blue-600 font-bold text-sm">{{
+              flight.airline.substring(0, 2)
+            }}</span>
           </div>
-          
+
           <div>
             <h3 class="text-lg font-semibold text-gray-900">{{ flight.airline }}</h3>
             <p class="text-sm text-gray-500">{{ flight.flightNo }}</p>
@@ -30,7 +32,9 @@
             <div class="w-full h-px bg-gray-300 relative">
               <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                  <path
+                    d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
+                  />
                 </svg>
               </div>
             </div>
@@ -49,13 +53,23 @@
         <div class="flex items-center gap-4 mt-4 text-sm text-gray-600">
           <span v-if="flight.aircraft" class="flex items-center gap-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             {{ flight.aircraft }}
           </span>
           <span class="flex items-center gap-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
             </svg>
             余票: {{ availableSeats }}
           </span>
@@ -72,10 +86,12 @@
 
         <!-- 状态标签 -->
         <div v-if="flight.status !== 'scheduled'" class="mb-2">
-          <span 
+          <span
             :class="[
               'inline-block px-3 py-1 rounded-full text-xs font-medium',
-              flight.status === 'delayed' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+              flight.status === 'delayed'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-red-100 text-red-800'
             ]"
           >
             {{ getStatusText(flight.status) }}

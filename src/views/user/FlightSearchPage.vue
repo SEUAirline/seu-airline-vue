@@ -9,8 +9,18 @@
               <p class="text-sm text-gray-500">出发地</p>
               <p class="text-lg font-semibold text-gray-900">{{ searchParams.departureCity }}</p>
             </div>
-            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            <svg
+              class="w-6 h-6 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
             </svg>
             <div>
               <p class="text-sm text-gray-500">目的地</p>
@@ -18,7 +28,9 @@
             </div>
             <div class="ml-6">
               <p class="text-sm text-gray-500">出发日期</p>
-              <p class="text-lg font-semibold text-gray-900">{{ formatDate(searchParams.departureDate) }}</p>
+              <p class="text-lg font-semibold text-gray-900">
+                {{ formatDate(searchParams.departureDate) }}
+              </p>
             </div>
             <div>
               <p class="text-sm text-gray-500">乘客</p>
@@ -53,7 +65,8 @@
           <div class="bg-white rounded-lg shadow-md p-4 mb-4">
             <div class="flex items-center justify-between">
               <p class="text-gray-600">
-                找到 <span class="font-semibold text-gray-900">{{ filteredFlights.length }}</span> 个航班
+                找到
+                <span class="font-semibold text-gray-900">{{ filteredFlights.length }}</span> 个航班
               </p>
               <div class="flex items-center gap-4">
                 <label class="text-sm text-gray-600">排序方式:</label>
@@ -74,7 +87,9 @@
 
           <!-- 加载状态 -->
           <div v-if="loading" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div
+              class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+            ></div>
             <p class="mt-4 text-gray-600">正在搜索航班...</p>
           </div>
 
@@ -100,8 +115,18 @@
 
           <!-- 无结果提示 -->
           <div v-else class="bg-white rounded-lg shadow-md p-12 text-center">
-            <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              class="w-24 h-24 mx-auto text-gray-300 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">未找到符合条件的航班</h3>
             <p class="text-gray-600 mb-6">请尝试修改搜索条件或筛选条件</p>
@@ -177,9 +202,8 @@ const filteredFlights = computed(() => {
   let flights = [...searchResults.value]
 
   // 价格筛选
-  flights = flights.filter(f => 
-    f.price >= filters.value.priceRange[0] && 
-    f.price <= filters.value.priceRange[1]
+  flights = flights.filter(
+    f => f.price >= filters.value.priceRange[0] && f.price <= filters.value.priceRange[1]
   )
 
   // 起飞时间筛选
