@@ -1,21 +1,21 @@
 import type { ApiResponse } from '@/types/api'
 import type { Flight, FlightSearchParams, Airport } from '@/types/flight'
-import { mockApi } from './mock'
+import { request } from './client'
 
 export const flightApi = {
   // 获取机场列表
   getAirports(): Promise<ApiResponse<Airport[]>> {
-    return mockApi.getAirports()
+    return request.get('/v1/airport/list')
   },
 
   // 搜索航班
   searchFlights(params: FlightSearchParams): Promise<ApiResponse<Flight[]>> {
-    return mockApi.searchFlights(params)
+    return request.get('/v1/flight/search', { params })
   },
 
   // 根据ID获取航班详情
   getFlightById(flightId: string): Promise<ApiResponse<Flight>> {
-    return mockApi.getFlightById(flightId)
+    return request.get(`/v1/flight/${flightId}`)
   },
 
   // 获取所有航班（管理员）
