@@ -314,7 +314,7 @@ function handleModifySearch() {
 function handleBook(flight: Flight) {
   flightStore.selectFlight(flight)
   router.push({
-    name: 'flight-book',
+    name: 'FlightBook',
     params: { id: flight.id }
   })
 }
