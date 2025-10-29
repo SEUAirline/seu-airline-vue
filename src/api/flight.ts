@@ -5,7 +5,7 @@ import { request } from './client'
 export const flightApi = {
   // 获取机场列表
   getAirports(): Promise<ApiResponse<Airport[]>> {
-    return request.get('/api/airport/list')
+    return request.get('/airport/list')
   },
 
   // 搜索航班
@@ -16,12 +16,12 @@ export const flightApi = {
       arrivalCity: params.arrivalCity,
       departureDate: params.departureDate
     }
-    return request.get('/api/flight/search', { params: searchParams })
+    return request.get('/flight/search', { params: searchParams })
   },
 
   // 根据ID获取航班详情
   getFlightById(flightId: string): Promise<ApiResponse<Flight>> {
-    return request.get(`/api/flight/${flightId}`)
+    return request.get(`/flight/${flightId}`)
   },
 
   // 获取所有航班（管理员）

@@ -5,7 +5,7 @@ import { request } from './client'
 export const userApi = {
   // 用户登录
   login(loginForm: LoginForm): Promise<ApiResponse<{ user: User; token: string }>> {
-    return request.post('/api/auth/login', loginForm)
+    return request.post('/auth/login', loginForm)
   },
 
   // 用户注册
@@ -19,7 +19,7 @@ export const userApi = {
       idCard: registerForm.idCard,
       fullName: registerForm.realName
     }
-    return request.post('/api/auth/register', registerData)
+    return request.post('/auth/register', registerData)
   },
 
   // 获取当前用户信息

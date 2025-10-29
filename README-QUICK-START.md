@@ -10,9 +10,6 @@
 ### 1. 启动开发服务器
 
 ```bash
-# 进入项目目录
-cd c:\Users\67425\Desktop\SeuAirline\seu-airline-vue
-
 # 启动开发服务器
 npm run dev
 ```

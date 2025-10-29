@@ -13,26 +13,26 @@ export const orderApi = {
         passengerIdCard: passenger.idCard
       }))
     }
-    return request.post('/api/orders', orderRequest)
+    return request.post('/orders', orderRequest)
   },
 
   // 获取用户订单列表
   getUserOrders(): Promise<ApiResponse<Order[]>> {
-    return request.get('/api/orders')
+    return request.get('/orders')
   },
 
   // 根据ID获取订单详情
   getOrderById(orderId: string): Promise<ApiResponse<Order>> {
-    return request.get(`/api/orders/${orderId}`)
+    return request.get(`/orders/${orderId}`)
   },
 
   // 支付订单
   payOrder(params: PaymentParams): Promise<ApiResponse> {
-    return request.put(`/api/orders/${params.orderId}/pay`)
+    return request.put(`/orders/${params.orderId}/pay`)
   },
 
   // 取消订单
   cancelOrder(orderId: string): Promise<ApiResponse> {
-    return request.put(`/api/orders/${orderId}/cancel`)
+    return request.put(`/orders/${orderId}/cancel`)
   }
 }
