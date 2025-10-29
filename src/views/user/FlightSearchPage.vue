@@ -140,6 +140,14 @@
         </div>
       </div>
     </div>
+
+    <!-- 航班详情模态框 -->
+    <FlightDetailModal
+      :flight="selectedFlight"
+      :is-open="isDetailModalOpen"
+      @close="handleCloseDetail"
+      @book="handleBookFromDetail"
+    />
   </div>
 </template>
 
@@ -152,6 +160,7 @@ import type { FlightFilters } from '@/components/FlightFilter.vue'
 import FlightCard from '@/components/FlightCard.vue'
 import FlightFilter from '@/components/FlightFilter.vue'
 import Pagination from '@/components/Pagination.vue'
+import FlightDetailModal from '@/components/FlightDetailModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -162,6 +171,8 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const sortBy = ref('price-asc')
+const selectedFlight = ref<Flight | null>(null)
+const isDetailModalOpen = ref(false)
 
 // 筛选条件
 const filters = ref<FlightFilters>({
@@ -321,9 +332,21 @@ function handleBook(flight: Flight) {
 
 // 查看详情
 function handleViewDetail(flight: Flight) {
-  flightStore.selectFlight(flight)
-  // 可以打开一个模态框显示详情，或跳转到详情页
-  console.log('查看航班详情:', flight)
+  selectedFlight.value = flight
+  isDetailModalOpen.value = true
+}
+
+// 关闭详情模态框
+function handleCloseDetail() {
+  isDetailModalOpen.value = false
+}
+
+// 从详情模态框预订
+function handleBookFromDetail(flightId: string) {
+  const flight = searchResults.value.find(f => f.id === flightId)
+  if (flight) {
+    handleBook(flight)
+  }
 }
 
 // 初始化

@@ -7,7 +7,9 @@
           <div class="flex items-center">
             <router-link to="/" class="flex items-center">
               <svg class="w-8 h-8 text-primary mr-2" fill="currentColor" viewBox="0 0 640 640">
-                <path d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z"/>
+                <path
+                  d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z"
+                />
               </svg>
               <span class="text-xl font-bold text-primary">SEUAirline</span>
             </router-link>
@@ -15,8 +17,12 @@
 
           <div class="hidden md:flex space-x-8">
             <router-link to="/" class="text-primary font-medium">首页</router-link>
-            <router-link to="/orders" class="text-gray-600 hover:text-primary">我的订单</router-link>
-            <router-link to="/user/center" class="text-gray-600 hover:text-primary">个人中心</router-link>
+            <router-link to="/orders" class="text-gray-600 hover:text-primary"
+              >我的订单</router-link
+            >
+            <router-link to="/user/center" class="text-gray-600 hover:text-primary"
+              >个人中心</router-link
+            >
             <router-link to="/help" class="text-gray-600 hover:text-primary">帮助中心</router-link>
           </div>
 
@@ -96,12 +102,15 @@
           </div>
 
           <div class="mt-6 flex justify-center">
-            <button @click="handleSearch" class="btn-primary px-12 py-3 text-lg">
-              搜索航班
-            </button>
+            <button @click="handleSearch" class="btn-primary px-12 py-3 text-lg">搜索航班</button>
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- 热门航线推荐 -->
+    <section class="container mx-auto px-4 py-16 bg-gray-50">
+      <PopularFlights />
     </section>
 
     <!-- 特色服务 -->
@@ -109,9 +118,16 @@
       <h2 class="text-3xl font-bold text-center mb-12">为什么选择SEUAirline</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="card p-6 text-center card-hover">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
             <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <h3 class="text-xl font-semibold mb-2">优惠价格</h3>
@@ -119,9 +135,16 @@
         </div>
 
         <div class="card p-6 text-center card-hover">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
             <svg class="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <h3 class="text-xl font-semibold mb-2">安全保障</h3>
@@ -129,9 +152,21 @@
         </div>
 
         <div class="card p-6 text-center card-hover">
-          <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+          <div
+            class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
+            <svg
+              class="w-8 h-8 text-purple-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+              />
             </svg>
           </div>
           <h3 class="text-xl font-semibold mb-2">24/7客服</h3>
@@ -147,7 +182,9 @@
           <div class="mb-4 md:mb-0">
             <div class="flex items-center">
               <svg class="w-6 h-6 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 640 640">
-                <path d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z"/>
+                <path
+                  d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z"
+                />
               </svg>
               <span class="font-bold text-lg">SEUAirline</span>
             </div>
@@ -169,6 +206,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useFlightStore } from '@/stores/flight'
+import PopularFlights from '@/components/PopularFlights.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -194,7 +232,11 @@ onMounted(async () => {
 })
 
 function handleSearch() {
-  if (!searchForm.value.departureCity || !searchForm.value.arrivalCity || !searchForm.value.departureDate) {
+  if (
+    !searchForm.value.departureCity ||
+    !searchForm.value.arrivalCity ||
+    !searchForm.value.departureDate
+  ) {
     alert('请填写完整的搜索信息')
     return
   }
