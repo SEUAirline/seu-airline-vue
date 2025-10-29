@@ -47,11 +47,12 @@
 - [x] **Pagination.vue** - 分页组件（150行，完整功能）
 
 #### 4. Mock数据系统
-- [x] flight.ts - 航班Mock API（15-30个随机航班）
-- [x] user.ts - 用户Mock API
-- [x] order.ts - 订单Mock API
-- [x] 10个城市机场数据
-- [x] 7个航空公司数据
+- [x] mock/flight.ts - Mock API (`/mock/api/*` 前缀，15-30个随机航班)
+- [x] mock/user.ts - Mock API (`/mock/api/*` 前缀)
+- [x] mock/order.ts - Mock API (`/mock/api/*` 前缀)
+- [x] 10个城市机场数据（内存生成）
+- [x] 7个航空公司数据（内存生成）
+- [x] **注意:** Mock与真实API (`/api/*`) 互不冲突，可同时使用
 
 ### ⚠️ 未完成/待开发功能
 
@@ -68,11 +69,21 @@
 - [ ] Toast.vue - 消息提示组件
 - [ ] Modal.vue - 模态框组件
 
-#### 3. 后端API对接
-- [ ] 航班搜索接口（当前仅Mock）
-- [ ] 航班详情接口
-- [ ] 订单创建接口
-- [ ] 支付接口
+#### 3. 后端API对接状态
+
+**Mock API** (`/mock/api/*` 前缀，开发模式):
+- ✅ 航班搜索接口 - 内存随机数据
+- ✅ 航班详情接口 - 内存随机数据
+- ✅ 用户登录注册 - 内存模拟验证
+- ✅ 订单创建查询 - 内存模拟数据
+
+**真实后端API** (`/api/*` 前缀，生产模式):
+- ✅ 后端已实现完整API (Spring Boot)
+- ✅ 数据库已配置 (MySQL + Redis)
+- ⚠️ 前端可选择使用Mock或真实API
+- ⚠️ 测试数据来源: `init-db.sql` 脚本
+
+**说明:** Mock系统使用 `/mock` 前缀，与真实API (`/api`) **互不冲突**，可同时使用。详见 `TESTING-GUIDE.md`。
 
 ---
 

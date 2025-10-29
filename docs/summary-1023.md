@@ -76,24 +76,26 @@ npm install -D vite-plugin-mock mockjs
 - ✅ 导入 viteMockServe
 - ✅ 配置 Mock 插件
 - ✅ 设置 mockPath 为 'mock'
+- ✅ **注意:** Mock使用 `/mock` 前缀，与真实API (`/api`) 分离
 
 ##### src/api/flight.ts
 - ✅ 更新为使用真实 HTTP 请求
-- ✅ 通过 vite-plugin-mock 拦截
+- ✅ 通过 vite-plugin-mock 拦截 `/mock/api/*` 请求
+- ✅ 真实API使用 `/api/*` 前缀（不被Mock拦截）
 
 #### 3. 创建的 Mock 文件（3个）
 
 ##### mock/flight.ts
 **代码行数:** ~220 行
 
-**Mock API:**
-- ✅ GET /api/flight/search - 搜索航班
-- ✅ GET /api/flight/:id - 航班详情
-- ✅ GET /api/airport/list - 机场列表
-- ✅ GET /api/flight/popular - 热门航线
+**Mock API (使用 `/mock/api/*` 前缀):**
+- ✅ GET /mock/api/flight/search - 搜索航班
+- ✅ GET /mock/api/flight/:id - 航班详情
+- ✅ GET /mock/api/airport/list - 机场列表
+- ✅ GET /mock/api/flight/popular - 热门航线
 
 **数据特点:**
-- 自动生成 15-30 个随机航班
+- 自动生成 15-30 个随机航班（内存数据）
 - 7 个航空公司
 - 10 个城市机场
 - 完整的航班信息（时间、价格、座位等）
@@ -101,12 +103,12 @@ npm install -D vite-plugin-mock mockjs
 ##### mock/user.ts
 **代码行数:** ~180 行
 
-**Mock API:**
-- ✅ POST /api/auth/register - 用户注册
-- ✅ POST /api/auth/login - 用户登录
-- ✅ GET /api/user/profile - 获取用户信息
-- ✅ PUT /api/user/profile - 更新用户信息
-- ✅ PUT /api/user/password - 修改密码
+**Mock API (使用 `/mock/api/*` 前缀):**
+- ✅ POST /mock/api/auth/register - 用户注册
+- ✅ POST /mock/api/auth/login - 用户登录
+- ✅ GET /mock/api/user/profile - 获取用户信息
+- ✅ PUT /mock/api/user/profile - 更新用户信息
+- ✅ PUT /mock/api/user/password - 修改密码
 
 **测试账号:**
 - 用户名: user001
@@ -115,13 +117,21 @@ npm install -D vite-plugin-mock mockjs
 ##### mock/order.ts
 **代码行数:** ~160 行
 
-**Mock API:**
-- ✅ POST /api/orders - 创建订单
-- ✅ GET /api/orders - 订单列表
-- ✅ GET /api/orders/:id - 订单详情
-- ✅ PUT /api/orders/:id/cancel - 取消订单
-- ✅ PUT /api/orders/:id/pay - 支付订单
-- ✅ POST /api/orders/:id/refund - 申请退票
+**Mock API (使用 `/mock/api/*` 前缀):**
+- ✅ POST /mock/api/orders - 创建订单
+- ✅ GET /mock/api/orders - 订单列表
+- ✅ GET /mock/api/orders/:id - 订单详情
+- ✅ PUT /mock/api/orders/:id/cancel - 取消订单
+- ✅ PUT /mock/api/orders/:id/pay - 支付订单
+- ✅ POST /mock/api/orders/:id/refund - 申请退票
+
+**重要说明:**
+- Mock API 使用 `/mock/api/*` 前缀
+- 真实后端 API 使用 `/api/*` 前缀
+- 两者**互不冲突**，可同时使用
+- Mock数据存储在内存中，刷新页面会重置
+- 真实API数据存储在MySQL数据库中，持久化
+- 详见 `TESTING-GUIDE.md` 完整说明
 
 ---
 
@@ -134,26 +144,18 @@ npm install -D vite-plugin-mock mockjs
 - 技术亮点
 - 下一步计划
 
-#### 2. how-to-test.md
-**内容:** 航班搜索功能测试指南
-- 测试步骤
-- 测试场景
-- 功能检查清单
-- 常见问题
+#### 2. TESTING-GUIDE.md (已替换旧文档)
+**内容:** 统一测试指南
+- Mock API vs 真实API 区别
+- 测试环境配置
+- 测试账户和数据
+- 详细测试步骤
+- 调试技巧和常见问题
 
-#### 3. mock-setup-guide.md
-**内容:** Mock 数据配置完整指南
-- 安装步骤
-- 配置说明
-- API 文档
-- 调试技巧
-
-#### 4. mock-test-checklist.md
-**内容:** Mock 数据测试清单
-- 测试步骤
-- 验证方法
-- 问题排查
-- 测试报告模板
+**注意:** 本文档替代了以下已删除的旧文档:
+- ~~how-to-test.md~~ (已删除)
+- ~~mock-setup-guide.md~~ (已删除)
+- ~~mock-test-checklist.md~~ (已删除)
 
 ---
 
