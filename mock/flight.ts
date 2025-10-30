@@ -13,7 +13,7 @@ const airlines = [
 ]
 
 // 机场数据
-const airports = {
+const airports: Record<string, [string, string]> = {
   北京: ['PEK', '首都国际机场'],
   上海: ['PVG', '浦东国际机场'],
   广州: ['CAN', '白云国际机场'],
