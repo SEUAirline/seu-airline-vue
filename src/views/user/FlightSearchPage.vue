@@ -152,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFlightStore } from '@/stores/flight'
 import type { Flight } from '@/types/flight'
@@ -349,30 +349,44 @@ function handleBookFromDetail(flightId: string) {
   }
 }
 
-// 初始化
-onMounted(async () => {
-  // 如果没有搜索结果，从URL参数重新搜索
-  if (searchResults.value.length === 0) {
-    const params = {
-      tripType: (route.query.tripType as string) || 'oneWay',
-      departureCity: (route.query.from as string) || '',
-      arrivalCity: (route.query.to as string) || '',
-      departureDate: (route.query.date as string) || '',
-      passengers: parseInt(route.query.passengers as string) || 1,
-      cabinClass: (route.query.cabin as string) || 'economy'
-    }
-
-    if (params.departureCity && params.arrivalCity && params.departureDate) {
-      loading.value = true
-      await flightStore.searchFlights(params as any)
-      loading.value = false
-    } else {
-      // 没有搜索参数，返回首页
-      router.push('/')
-    }
+// 执行搜索的函数
+async function performSearch() {
+  const params = {
+    tripType: (route.query.tripType as string) || 'oneWay',
+    departureCity: (route.query.from as string) || '',
+    arrivalCity: (route.query.to as string) || '',
+    departureDate: (route.query.date as string) || '',
+    passengers: parseInt(route.query.passengers as string) || 1,
+    cabinClass: (route.query.cabin as string) || 'economy'
   }
 
-  // 初始化筛选条件的价格区间
-  filters.value.priceRange = [priceRange.value.min, priceRange.value.max]
+  if (params.departureCity && params.arrivalCity && params.departureDate) {
+    loading.value = true
+    await flightStore.searchFlights(params as any)
+    loading.value = false
+    
+    // 重置筛选条件和分页
+    currentPage.value = 1
+    filters.value.priceRange = [priceRange.value.min, priceRange.value.max]
+  } else {
+    // 没有搜索参数，返回首页
+    router.push('/')
+  }
+}
+
+// 监听路由查询参数变化
+watch(
+  () => route.query,
+  async () => {
+    // 当路由查询参数变化时，执行新的搜索
+    await performSearch()
+  },
+  { deep: true }
+)
+
+// 初始化
+onMounted(async () => {
+  // 从URL参数执行搜索
+  await performSearch()
 })
 </script>

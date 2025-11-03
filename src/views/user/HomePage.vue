@@ -28,6 +28,8 @@
 
           <div class="flex items-center space-x-4">
             <template v-if="isAuthenticated">
+              <!-- 消息通知 -->
+              <MessageNotification />
               <span class="text-gray-700">{{ userInfo?.username }}</span>
               <button @click="handleLogout" class="btn-secondary">退出</button>
             </template>
@@ -207,6 +209,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useFlightStore } from '@/stores/flight'
 import PopularFlights from '@/components/PopularFlights.vue'
+import MessageNotification from '@/components/MessageNotification.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
