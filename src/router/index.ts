@@ -41,9 +41,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/orders',
-    name: 'OrderList',
-    component: () => import('@/views/user/OrderListPage.vue'),
-    meta: { title: '我的订单', requiresAuth: true }
+    redirect: '/user/orders'
   },
   {
     path: '/orders/success/:id',
@@ -52,10 +50,32 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '订单成功', requiresAuth: true }
   },
   {
-    path: '/user/center',
-    name: 'UserCenter',
-    component: () => import('@/views/user/UserCenterPage.vue'),
+    path: '/user/profile',
+    name: 'UserProfile',
+    component: () => import('@/views/user/ProfilePage.vue'),
     meta: { title: '个人中心', requiresAuth: true }
+  },
+  {
+    path: '/user/orders',
+    name: 'UserOrders',
+    component: () => import('@/views/user/OrdersPage.vue'),
+    meta: { title: '我的订单', requiresAuth: true }
+  },
+  {
+    path: '/user/passengers',
+    name: 'UserPassengers',
+    component: () => import('@/views/user/PassengersPage.vue'),
+    meta: { title: '常用旅客', requiresAuth: true }
+  },
+  {
+    path: '/user/settings',
+    name: 'UserSettings',
+    component: () => import('@/views/user/SettingsPage.vue'),
+    meta: { title: '账号设置', requiresAuth: true }
+  },
+  {
+    path: '/user/center',
+    redirect: '/user/profile'
   },
   {
     path: '/user/messages',

@@ -1,5 +1,8 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <AppHeader />
+    
     <div class="container mx-auto px-4 py-8">
       <div class="max-w-2xl mx-auto">
         <!-- 成功动画 -->
@@ -91,7 +94,7 @@
           <!-- 操作按钮 -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              @click="router.push({ name: 'OrderList' })"
+              @click="router.push('/user/orders')"
               class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
             >
               查看订单
@@ -103,7 +106,7 @@
               继续预订
             </button>
             <button
-              @click="router.push('/user/center')"
+              @click="router.push('/user/profile')"
               class="px-8 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
             >
               个人中心
@@ -177,6 +180,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOrderStore } from '@/stores/order'
+import AppHeader from '@/components/AppHeader.vue'
 
 const route = useRoute()
 const router = useRouter()

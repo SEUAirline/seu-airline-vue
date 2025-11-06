@@ -18,6 +18,50 @@ const airports = [
 // 航空公司
 const airlines = ['中国国际航空', '中国东方航空', '中国南方航空', '海南航空', '厦门航空']
 
+// 用户数据
+const users: any = {
+  '1': {
+    id: 1,
+    username: 'user123',
+    nickname: '张三',
+    email: 'zhangsan@example.com',
+    phone: '13800138000',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user123',
+    gender: 'male',
+    birthday: '1990-01-01',
+    idCard: '320123199001011234',
+    createTime: '2024-01-01 10:00:00',
+    points: 1580,
+    level: 'gold'
+  }
+}
+
+// 常用旅客数据
+const passengers: any[] = [
+  {
+    id: 'p1',
+    userId: 1,
+    name: '张三',
+    idType: 'ID_CARD',
+    idNumber: '320123199001011234',
+    phone: '13800138000',
+    email: 'zhangsan@example.com',
+    passengerType: 'adult',
+    isDefault: true
+  },
+  {
+    id: 'p2',
+    userId: 1,
+    name: '李四',
+    idType: 'ID_CARD',
+    idNumber: '320123199002021234',
+    phone: '13900139000',
+    email: 'lisi@example.com',
+    passengerType: 'adult',
+    isDefault: false
+  }
+]
+
 // 生成航班数据
 function generateFlights(departureCity: string, arrivalCity: string, departureDate: string) {
   const flights = []
@@ -272,6 +316,182 @@ export function handleMockRequest(req: any, res: any): boolean {
         orderId: order.id,
         orderNo: order.orderNo,
         payTime: order.payTime
+      }
+    }))
+    return true
+  }
+
+  // 获取用户信息
+  if (pathname === '/api/user/profile') {
+    const user = users['1'] // 模拟当前登录用户
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: '查询成功',
+      success: true,
+      data: user
+    }))
+    return true
+  }
+
+  // 更新用户信息
+  if (pathname === '/api/user/profile' && req.method === 'PUT') {
+    let body = ''
+    req.on('data', (chunk: any) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => {
+      const data = JSON.parse(body)
+      users['1'] = { ...users['1'], ...data }
+      
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 200,
+        message: '更新成功',
+        success: true,
+        data: users['1']
+      }))
+    })
+    return true
+  }
+
+  // 修改密码
+  if (pathname === '/api/user/password' && req.method === 'PUT') {
+    let body = ''
+    req.on('data', (chunk: any) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 200,
+        message: '密码修改成功',
+        success: true,
+        data: null
+      }))
+    })
+    return true
+  }
+
+  // 获取常用旅客列表
+  if (pathname === '/api/passengers') {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: '查询成功',
+      success: true,
+      data: passengers
+    }))
+    return true
+  }
+
+  // 添加常用旅客
+  if (pathname === '/api/passengers' && req.method === 'POST') {
+    let body = ''
+    req.on('data', (chunk: any) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => {
+      const data = JSON.parse(body)
+      const newPassenger = {
+        id: `p${passengers.length + 1}`,
+        userId: 1,
+        ...data
+      }
+      passengers.push(newPassenger)
+      
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 200,
+        message: '添加成功',
+        success: true,
+        data: newPassenger
+      }))
+    })
+    return true
+  }
+
+  // 更新常用旅客
+  if (pathname?.startsWith('/api/passengers/') && req.method === 'PUT') {
+    const passengerId = pathname.split('/')[3]
+    let body = ''
+    req.on('data', (chunk: any) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => {
+      const data = JSON.parse(body)
+      const index = passengers.findIndex(p => p.id === passengerId)
+      if (index !== -1) {
+        passengers[index] = { ...passengers[index], ...data }
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({
+          code: 200,
+          message: '更新成功',
+          success: true,
+          data: passengers[index]
+        }))
+      } else {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({
+          code: 404,
+          message: '旅客不存在',
+          success: false,
+          data: null
+        }))
+      }
+    })
+    return true
+  }
+
+  // 删除常用旅客
+  if (pathname?.startsWith('/api/passengers/') && req.method === 'DELETE') {
+    const passengerId = pathname.split('/')[3]
+    const index = passengers.findIndex(p => p.id === passengerId)
+    if (index !== -1) {
+      passengers.splice(index, 1)
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 200,
+        message: '删除成功',
+        success: true,
+        data: null
+      }))
+    } else {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 404,
+        message: '旅客不存在',
+        success: false,
+        data: null
+      }))
+    }
+    return true
+  }
+
+  // 获取用户订单列表
+  if (pathname === '/api/user/orders') {
+    const { status, page = '1', pageSize = '10' } = query
+    let filteredOrders = orders
+    
+    if (status && status !== 'all') {
+      filteredOrders = orders.filter(o => o.status === parseInt(status as string))
+    }
+    
+    const pageNum = parseInt(page as string)
+    const size = parseInt(pageSize as string)
+    const start = (pageNum - 1) * size
+    const end = start + size
+    
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: '查询成功',
+      success: true,
+      data: {
+        list: filteredOrders.slice(start, end),
+        total: filteredOrders.length,
+        page: pageNum,
+        pageSize: size
       }
     }))
     return true
