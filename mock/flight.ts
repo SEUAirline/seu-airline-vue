@@ -118,7 +118,7 @@ function generateFlights(params: any) {
 export default [
   // 搜索航班
   {
-    url: '/mock/api/flight/search',
+    url: '/flight/search',
     method: 'get',
     response: (request: any) => {
       const { departureCity, arrivalCity, departureDate } = request.query
@@ -145,7 +145,7 @@ export default [
 
   // 获取航班详情
   {
-    url: '/mock/api/flight/:id',
+    url: '/flight/:id',
     method: 'get',
     response: (request: any) => {
       const { id } = request.params
@@ -192,7 +192,7 @@ export default [
 
   // 获取机场列表
   {
-    url: '/mock/api/airport/list',
+    url: '/airport/list',
     method: 'get',
     response: () => {
       const airportList = Object.entries(airports).map(([city, [code, name]]) => ({
@@ -212,7 +212,7 @@ export default [
 
   // 获取热门航线
   {
-    url: '/mock/api/flight/popular',
+    url: '/flight/popular',
     method: 'get',
     response: () => {
       const routes = [
@@ -231,4 +231,4 @@ export default [
       }
     }
   }
-] as MockMethod[]
+]

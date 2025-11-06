@@ -15,25 +15,70 @@ function generateOrderNo(): string {
 }
 
 export default [
+  // 获取航班可用座位
+  {
+    url: /\/seats\/flight\/(.+)\/type\/(.+)\/available/,
+    method: 'get',
+    response: (request: any) => {
+      // 从 URL 中提取参数
+      const matches = request.url.match(/\/seats\/flight\/(.+)\/type\/(.+)\/available/)
+      const flightId = matches ? matches[1] : ''
+      const seatType = matches ? matches[2] : 'ECONOMY'
+
+      // 根据舱位类型生成不同数量的可用座位
+      const seatCounts: Record<string, number> = {
+        ECONOMY: 150,
+        BUSINESS: 30,
+        FIRST: 10
+      }
+
+      const count = seatCounts[seatType] || 150
+
+      // 生成座位列表
+      const seats = []
+      for (let i = 1; i <= count; i++) {
+        seats.push({
+          id: i,
+          flightId: flightId,
+          seatNumber: `${Math.ceil(i / 6)}${String.fromCharCode(65 + (i % 6))}`,
+          seatType: seatType,
+          price: seatType === 'ECONOMY' ? 800 : seatType === 'BUSINESS' ? 2000 : 3200,
+          status: 'AVAILABLE'
+        })
+      }
+
+      return {
+        code: 200,
+        message: '查询成功',
+        data: seats,
+        success: true
+      }
+    }
+  },
+
   // 创建订单
   {
-    url: '/mock/api/order',
+    url: '/orders',
     method: 'post',
     response: (request: any) => {
-      const { flightId, passengers, contactName, contactPhone, totalPrice } = request.body
+      const { items } = request.body
 
       const orderNo = generateOrderNo()
       const order = {
         id: Mock.Random.guid(),
         orderNo,
         userId: 1,
-        flightId,
-        totalPrice,
+        flightId: items[0]?.flightId || Mock.Random.guid(),
+        totalPrice: items.length * 800,
         status: 1, // 1: 待支付
         paymentMethod: null,
-        contactName,
-        contactPhone,
-        passengers,
+        contactName: items[0]?.passengerName || '测试用户',
+        contactPhone: '13800138000',
+        passengers: items.map((item: any) => ({
+          name: item.passengerName,
+          idCard: item.passengerIdCard,
+          seatNumber: Mock.Random.pick(['12A', '12B', '12C', '13A', '13B', '13C'])
+        })),
         createTime: new Date().toISOString(),
         payTime: null,
         cancelTime: null
@@ -45,8 +90,14 @@ export default [
         code: 200,
         message: '订单创建成功',
         data: {
-          orderId: order.id,
-          orderNo: order.orderNo
+          id: order.id,
+          orderNo: order.orderNo,
+          flightNo: 'CA1234',
+          departureCity: '南京',
+          arrivalCity: '北京',
+          departureTime: '2025-11-07 08:00',
+          passengerCount: items.length,
+          totalPrice: order.totalPrice
         },
         success: true
       }
@@ -55,7 +106,7 @@ export default [
 
   // 获取订单列表
   {
-    url: '/mock/api/order/list',
+    url: '/orders',
     method: 'get',
     response: (request: any) => {
       const { status, page = 1, pageSize = 10 } = request.query
@@ -87,7 +138,7 @@ export default [
 
   // 获取订单详情
   {
-    url: '/mock/api/order/:id',
+    url: '/orders/:id',
     method: 'get',
     response: (request: any) => {
       const { id } = request.params
@@ -102,10 +153,19 @@ export default [
         }
       }
 
+      // 返回完整的订单信息，包含支付页面需要的字段
       return {
         code: 200,
         message: '查询成功',
-        data: order,
+        data: {
+          ...order,
+          flightNo: 'CA1234',
+          departureCity: '南京',
+          arrivalCity: '北京',
+          departureTime: '2025-11-07 08:00',
+          arrivalTime: '2025-11-07 10:30',
+          passengerCount: order.passengers?.length || 1
+        },
         success: true
       }
     }
@@ -113,7 +173,7 @@ export default [
 
   // 取消订单
   {
-    url: '/mock/api/order/:id/cancel',
+    url: '/orders/:id/cancel',
     method: 'put',
     response: (request: any) => {
       const { id } = request.params
@@ -151,8 +211,8 @@ export default [
 
   // 支付订单
   {
-    url: '/mock/api/order/:id/pay',
-    method: 'post',
+    url: '/orders/:id/pay',
+    method: 'put',
     response: (request: any) => {
       const { id } = request.params
       const { paymentMethod } = request.body
@@ -196,7 +256,7 @@ export default [
 
   // 申请退票
   {
-    url: '/mock/api/order/:id/refund',
+    url: '/orders/:id/refund',
     method: 'post',
     response: (request: any) => {
       const { id } = request.params
@@ -233,4 +293,4 @@ export default [
       }
     }
   }
-] as MockMethod[]
+]

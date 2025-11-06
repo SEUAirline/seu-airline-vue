@@ -92,9 +92,9 @@ export const useMessageStore = defineStore('message', () => {
       
       const response = await messageApi.getMessages(params)
       
-      if (response.data.code === 200 && response.data.data) {
-        messages.value = response.data.data.list
-        total.value = response.data.data.total
+      if (response.success && response.data) {
+        messages.value = response.data.list
+        total.value = response.data.total
         currentFilter.value = params
       }
     } catch (error) {
@@ -110,8 +110,8 @@ export const useMessageStore = defineStore('message', () => {
   const fetchUnreadCount = async () => {
     try {
       const response = await messageApi.getUnreadCount()
-      if (response.data.code === 200 && response.data.data !== undefined) {
-        unreadCount.value = response.data.data
+      if (response.success && response.data !== undefined) {
+        unreadCount.value = response.data
       }
     } catch (error) {
       console.error('获取未读消息数失败:', error)

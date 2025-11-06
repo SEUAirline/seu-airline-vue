@@ -106,7 +106,7 @@ let nextMessageId = mockMessages.length + 1
 export default [
   // 获取消息列表
   {
-    url: '/api/messages',
+    url: '/messages',
     method: 'get',
     response: (request: any) => {
       const { type, isRead, page = 1, pageSize = 20 } = request.query
@@ -148,7 +148,7 @@ export default [
   
   // 获取未读消息数
   {
-    url: '/api/messages/unread-count',
+    url: '/messages/unread-count',
     method: 'get',
     response: () => {
       const unreadCount = mockMessages.filter(msg => !msg.isRead).length
@@ -156,14 +156,15 @@ export default [
       return {
         code: 200,
         message: 'success',
-        data: unreadCount
+        data: unreadCount,
+        success: true
       }
     }
   },
   
   // 获取消息详情
   {
-    url: '/api/messages/:id',
+    url: '/messages/:id',
     method: 'get',
     response: (request: any) => {
       const id = parseInt(request.params.id)
@@ -180,14 +181,15 @@ export default [
       return {
         code: 200,
         message: 'success',
-        data: message
+        data: message,
+        success: true
       }
     }
   },
   
   // 标记消息为已读
   {
-    url: '/api/messages/:id/read',
+    url: '/messages/:id/read',
     method: 'put',
     response: (request: any) => {
       const id = parseInt(request.params.id)
@@ -209,14 +211,15 @@ export default [
       return {
         code: 200,
         message: '标记成功',
-        data: null
+        data: null,
+        success: true
       }
     }
   },
   
   // 全部标记为已读
   {
-    url: '/api/messages/read-all',
+    url: '/messages/read-all',
     method: 'put',
     response: () => {
       const now = new Date().toISOString()
@@ -230,14 +233,15 @@ export default [
       return {
         code: 200,
         message: '全部标记成功',
-        data: null
+        data: null,
+        success: true
       }
     }
   },
   
   // 删除消息
   {
-    url: '/api/messages/:id',
+    url: '/messages/:id',
     method: 'delete',
     response: (request: any) => {
       const id = parseInt(request.params.id)
@@ -256,14 +260,15 @@ export default [
       return {
         code: 200,
         message: '删除成功',
-        data: null
+        data: null,
+        success: true
       }
     }
   },
   
   // 批量删除消息
   {
-    url: '/api/messages/batch',
+    url: '/messages/batch',
     method: 'delete',
     response: (request: any) => {
       const { ids } = request.body
@@ -272,7 +277,8 @@ export default [
         return {
           code: 400,
           message: '参数错误',
-          data: null
+          data: null,
+          success: false
         }
       }
       
@@ -286,14 +292,15 @@ export default [
       return {
         code: 200,
         message: '批量删除成功',
-        data: null
+        data: null,
+        success: true
       }
     }
   },
   
   // 创建消息 (用于测试)
   {
-    url: '/api/messages',
+    url: '/messages',
     method: 'post',
     response: (request: any) => {
       const { userId, title, content, type, relatedId, priority } = request.body
@@ -315,8 +322,9 @@ export default [
       return {
         code: 200,
         message: '创建成功',
-        data: newMessage
+        data: newMessage,
+        success: true
       }
     }
   }
-] as MockMethod[]
+]

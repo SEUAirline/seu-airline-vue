@@ -230,8 +230,13 @@ const cities = ref<string[]>([])
 
 onMounted(async () => {
   // 加载机场数据
+  console.log('开始加载机场数据...')
   await flightStore.loadAirports()
+  console.log('机场数据加载完成:', flightStore.airports)
+  console.log('机场数量:', flightStore.airports.length)
   cities.value = [...new Set(flightStore.airports.map(a => a.city))]
+  console.log('提取的城市列表:', cities.value)
+  console.log('城市数量:', cities.value.length)
 })
 
 function handleSearch() {

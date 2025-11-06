@@ -21,9 +21,16 @@ export const useFlightStore = defineStore('flight', () => {
   // 加载机场数据
   async function loadAirports() {
     try {
+      console.log('Flight Store: 调用 API 获取机场列表...')
       const response = await flightApi.getAirports()
+      console.log('Flight Store: API 响应:', response)
+      console.log('Flight Store: response.success =', response.success)
+      console.log('Flight Store: response.data =', response.data)
       if (response.success && response.data) {
         airports.value = response.data
+        console.log('Flight Store: 机场数据已保存到 store:', airports.value.length, '个机场')
+      } else {
+        console.warn('Flight Store: API 响应不符合预期', response)
       }
     } catch (error) {
       console.error('加载机场数据失败:', error)

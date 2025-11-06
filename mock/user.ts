@@ -24,7 +24,7 @@ let currentToken = ''
 export default [
   // 用户注册
   {
-    url: '/mock/api/auth/register',
+    url: '/auth/register',
     method: 'post',
     response: (request: any) => {
       const { username, password, email, phone } = request.body
@@ -71,7 +71,7 @@ export default [
 
   // 用户登录
   {
-    url: '/mock/api/auth/login',
+    url: '/auth/login',
     method: 'post',
     response: (request: any) => {
       const { username, password } = request.body
@@ -113,7 +113,7 @@ export default [
 
   // 获取用户信息
   {
-    url: '/mock/api/user/profile',
+    url: '/user/profile',
     method: 'get',
     response: (request: any) => {
       const token = request.headers.authorization
@@ -150,7 +150,7 @@ export default [
 
   // 更新用户信息
   {
-    url: '/mock/api/user/profile',
+    url: '/user/profile',
     method: 'put',
     response: (request: any) => {
       const token = request.headers.authorization
@@ -188,7 +188,7 @@ export default [
 
   // 修改密码
   {
-    url: '/mock/api/user/password',
+    url: '/user/password',
     method: 'put',
     response: (request: any) => {
       const token = request.headers.authorization
@@ -224,4 +224,4 @@ export default [
       }
     }
   }
-] as MockMethod[]
+]

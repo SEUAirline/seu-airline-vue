@@ -41,6 +41,6 @@ export interface OrderCreateParams {
 
 export interface PaymentParams {
   orderId: string
-  paymentMethod: 'alipay' | 'wechat' | 'card'
-  amount: number
+  paymentMethod: 'alipay' | 'wechat' | 'bank'
+  amount?: number  // 可选，从订单中获取
 }

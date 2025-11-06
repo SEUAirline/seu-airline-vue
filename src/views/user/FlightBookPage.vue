@@ -117,113 +117,91 @@
               </div>
             </div>
 
-            <!-- 乘客信息 -->
+            <!-- 舱位选择 -->
             <div class="bg-white rounded-lg shadow-md p-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">乘客信息</h2>
-
-              <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      姓名 <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      v-model="bookingForm.passengerName"
-                      type="text"
-                      placeholder="请输入乘客姓名"
-                      :class="[
-                        'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                        errors.passengerName ? 'border-red-500' : 'border-gray-300'
-                      ]"
-                    />
-                    <p v-if="errors.passengerName" class="mt-1 text-sm text-red-500">
-                      {{ errors.passengerName }}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      证件号码 <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      v-model="bookingForm.idCard"
-                      type="text"
-                      placeholder="请输入18位身份证号"
-                      maxlength="18"
-                      :class="[
-                        'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                        errors.idCard ? 'border-red-500' : 'border-gray-300'
-                      ]"
-                    />
-                    <p v-if="errors.idCard" class="mt-1 text-sm text-red-500">
-                      {{ errors.idCard }}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      手机号 <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      v-model="bookingForm.phone"
-                      type="tel"
-                      placeholder="请输入手机号"
-                      maxlength="11"
-                      :class="[
-                        'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                        errors.phone ? 'border-red-500' : 'border-gray-300'
-                      ]"
-                    />
-                    <p v-if="errors.phone" class="mt-1 text-sm text-red-500">
-                      {{ errors.phone }}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      舱位等级 <span class="text-red-500">*</span>
-                    </label>
-                    <select
-                      v-model="bookingForm.cabinClass"
-                      :class="[
-                        'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                        errors.cabinClass ? 'border-red-500' : 'border-gray-300'
-                      ]"
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">选择舱位</h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <label
+                  v-for="cabin in ['economy', 'business', 'first']"
+                  :key="cabin"
+                  :class="[
+                    'relative flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all',
+                    selectedCabinClass === cabin
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 hover:border-blue-300'
+                  ]"
+                >
+                  <input
+                    v-model="selectedCabinClass"
+                    type="radio"
+                    :value="cabin"
+                    class="sr-only"
+                  />
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="font-semibold text-gray-900">
+                      {{ cabin === 'economy' ? '经济舱' : cabin === 'business' ? '商务舱' : '头等舱' }}
+                    </span>
+                    <svg
+                      v-if="selectedCabinClass === cabin"
+                      class="w-5 h-5 text-blue-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
                     >
-                      <option value="economy" :disabled="selectedFlight.economySeats <= 0">
-                        经济舱 (¥{{ selectedFlight.price }})
-                        {{
-                          selectedFlight.economySeats > 0
-                            ? `剩余${selectedFlight.economySeats}座`
-                            : '已售罄'
-                        }}
-                      </option>
-                      <option value="business" :disabled="selectedFlight.businessSeats <= 0">
-                        商务舱 (¥{{ Math.round(selectedFlight.price * 2.5) }})
-                        {{
-                          selectedFlight.businessSeats > 0
-                            ? `剩余${selectedFlight.businessSeats}座`
-                            : '已售罄'
-                        }}
-                      </option>
-                      <option value="first" :disabled="selectedFlight.firstClassSeats <= 0">
-                        头等舱 (¥{{ Math.round(selectedFlight.price * 4) }})
-                        {{
-                          selectedFlight.firstClassSeats > 0
-                            ? `剩余${selectedFlight.firstClassSeats}座`
-                            : '已售罄'
-                        }}
-                      </option>
-                    </select>
-                    <p v-if="errors.cabinClass" class="mt-1 text-sm text-red-500">
-                      {{ errors.cabinClass }}
-                    </p>
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
                   </div>
-                </div>
+                  <div class="text-2xl font-bold text-blue-600 mb-1">
+                    ¥{{ cabin === 'economy' ? selectedFlight.price : cabin === 'business' ? Math.round(selectedFlight.price * 2.5) : Math.round(selectedFlight.price * 4) }}
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    剩余 {{ cabin === 'economy' ? selectedFlight.economySeats : cabin === 'business' ? selectedFlight.businessSeats : selectedFlight.firstClassSeats }} 座
+                  </div>
+                </label>
               </div>
             </div>
+
+            <!-- 乘客信息 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">乘客信息</h2>
+                <button
+                  v-if="passengers.length < maxPassengers"
+                  @click="addPassenger"
+                  type="button"
+                  class="flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                >
+                  <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  添加乘客
+                </button>
+              </div>
+
+              <div class="space-y-4">
+                <PassengerForm
+                  v-for="(passenger, index) in passengers"
+                  :key="index"
+                  :passenger="passenger"
+                  :index="index"
+                  :errors="passengerErrors[index] || {}"
+                  :show-delete="passengers.length > 1"
+                  @update="(field, value) => updatePassengerField(index, field, value)"
+                  @delete="deletePassenger(index)"
+                />
+              </div>
+            </div>
+
+            <!-- 附加服务 -->
+            <ServiceSelector :services="services" @update="handleServiceUpdate" />
 
             <!-- 联系人信息 -->
             <div class="bg-white rounded-lg shadow-md p-6">
@@ -236,7 +214,7 @@
                     class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     @change="handleSameAsPassenger"
                   />
-                  <span class="ml-2 text-sm text-gray-700">与乘机人相同</span>
+                  <span class="ml-2 text-sm text-gray-700">与第一位乘客相同</span>
                 </label>
               </div>
 
@@ -246,16 +224,16 @@
                     联系人姓名 <span class="text-red-500">*</span>
                   </label>
                   <input
-                    v-model="bookingForm.contactName"
+                    v-model="contactInfo.name"
                     type="text"
                     placeholder="请输入联系人姓名"
                     :class="[
                       'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                      errors.contactName ? 'border-red-500' : 'border-gray-300'
+                      contactErrors.name ? 'border-red-500' : 'border-gray-300'
                     ]"
                   />
-                  <p v-if="errors.contactName" class="mt-1 text-sm text-red-500">
-                    {{ errors.contactName }}
+                  <p v-if="contactErrors.name" class="mt-1 text-sm text-red-500">
+                    {{ contactErrors.name }}
                   </p>
                 </div>
 
@@ -264,33 +242,33 @@
                     联系电话 <span class="text-red-500">*</span>
                   </label>
                   <input
-                    v-model="bookingForm.contactPhone"
+                    v-model="contactInfo.phone"
                     type="tel"
                     placeholder="请输入联系电话"
                     maxlength="11"
                     :class="[
                       'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                      errors.contactPhone ? 'border-red-500' : 'border-gray-300'
+                      contactErrors.phone ? 'border-red-500' : 'border-gray-300'
                     ]"
                   />
-                  <p v-if="errors.contactPhone" class="mt-1 text-sm text-red-500">
-                    {{ errors.contactPhone }}
+                  <p v-if="contactErrors.phone" class="mt-1 text-sm text-red-500">
+                    {{ contactErrors.phone }}
                   </p>
                 </div>
 
                 <div class="md:col-span-2">
                   <label class="block text-sm font-medium text-gray-700 mb-2"> 电子邮箱 </label>
                   <input
-                    v-model="bookingForm.email"
+                    v-model="contactInfo.email"
                     type="email"
                     placeholder="请输入电子邮箱（选填）"
                     :class="[
                       'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                      errors.email ? 'border-red-500' : 'border-gray-300'
+                      contactErrors.email ? 'border-red-500' : 'border-gray-300'
                     ]"
                   />
-                  <p v-if="errors.email" class="mt-1 text-sm text-red-500">
-                    {{ errors.email }}
+                  <p v-if="contactErrors.email" class="mt-1 text-sm text-red-500">
+                    {{ contactErrors.email }}
                   </p>
                 </div>
               </div>
@@ -299,72 +277,20 @@
 
           <!-- 右侧：订单摘要 -->
           <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">订单摘要</h2>
-
-              <div class="space-y-3 border-b border-gray-200 pb-4 mb-4">
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">航班号</span>
-                  <span class="font-medium text-gray-900">{{ selectedFlight.flightNo }}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">航线</span>
-                  <span class="font-medium text-gray-900">
-                    {{ selectedFlight.departureCity }} → {{ selectedFlight.arrivalCity }}
-                  </span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">出发日期</span>
-                  <span class="font-medium text-gray-900">{{ selectedFlight.date }}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">乘客人数</span>
-                  <span class="font-medium text-gray-900">1 人</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">舱位</span>
-                  <span class="font-medium text-gray-900">{{ getCabinClassName }}</span>
-                </div>
-              </div>
-
-              <div class="space-y-3 border-b border-gray-200 pb-4 mb-4">
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">机票价格</span>
-                  <span class="font-medium text-gray-900">¥{{ ticketPrice }}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">机场建设费</span>
-                  <span class="font-medium text-gray-900">¥50</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">燃油附加费</span>
-                  <span class="font-medium text-gray-900">¥30</span>
-                </div>
-              </div>
-
-              <div class="flex justify-between items-center mb-6">
-                <span class="text-lg font-semibold text-gray-900">总计</span>
-                <span class="text-2xl font-bold text-blue-600">¥{{ totalPrice }}</span>
-              </div>
-
-              <button
-                @click="handleSubmit"
-                :disabled="submitting"
-                :class="[
-                  'w-full py-3 rounded-lg font-semibold transition-colors',
-                  submitting
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                ]"
-              >
-                {{ submitting ? '提交中...' : '提交订单' }}
-              </button>
-
-              <p class="text-xs text-gray-500 text-center mt-4">
-                点击提交表示您已阅读并同意
-                <a href="#" class="text-blue-600 hover:underline">《购票协议》</a>
-              </p>
-            </div>
+            <PriceBreakdown
+              :flight-info="flightInfoForPrice"
+              :passenger-count="passengers.length"
+              :cabin-class-name="getCabinClassName"
+              :ticket-price="totalTicketPrice"
+              :airport-fee="passengers.length * 50"
+              :fuel-surcharge="passengers.length * 30"
+              :service-price="servicePrice"
+              :passenger-breakdown="passengerBreakdown"
+              :service-details="serviceDetails"
+              :disabled="submitting"
+              :button-text="submitting ? '提交中...' : '提交订单'"
+              @submit="handleSubmit"
+            />
           </div>
         </div>
       </div>
@@ -379,6 +305,9 @@ import { useFlightStore } from '@/stores/flight'
 import { useOrderStore } from '@/stores/order'
 import type { Flight } from '@/types/flight'
 import { formatTime, formatDate } from '@/utils/format'
+import PassengerForm from '@/components/PassengerForm.vue'
+import ServiceSelector from '@/components/ServiceSelector.vue'
+import PriceBreakdown from '@/components/PriceBreakdown.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -390,20 +319,53 @@ const loading = ref(true)
 const submitting = ref(false)
 const selectedFlight = ref<Flight | null>(null)
 const sameAsPassenger = ref(false)
+const maxPassengers = 9 // 最多9名乘客
 
-// 表单数据
-const bookingForm = ref({
-  passengerName: '',
-  idCard: '',
+// 乘客列表
+interface Passenger {
+  name: string
+  idType: 'idCard' | 'passport' | 'other'
+  idCard: string
+  phone: string
+  passengerType: 'adult' | 'child' | 'infant'
+}
+
+const passengers = ref<Passenger[]>([
+  {
+    name: '',
+    idType: 'idCard',
+    idCard: '',
+    phone: '',
+    passengerType: 'adult'
+  }
+])
+
+// 舱位选择
+const selectedCabinClass = ref<'economy' | 'business' | 'first'>('economy')
+
+// 联系人信息
+const contactInfo = ref({
+  name: '',
   phone: '',
-  cabinClass: 'economy' as 'economy' | 'business' | 'first',
-  contactName: '',
-  contactPhone: '',
   email: ''
 })
 
+// 附加服务
+const services = ref({
+  extraBaggage: false,
+  baggageWeight: '10',
+  insurance: false,
+  insuranceType: 'basic',
+  meal: false,
+  mealType: 'standard',
+  lounge: false
+})
+
+const servicePrice = ref(0)
+
 // 错误信息
-const errors = ref<Record<string, string>>({})
+const passengerErrors = ref<Record<number, Record<string, string>>>({})
+const contactErrors = ref<Record<string, string>>({})
 
 // 计算属性
 const getCabinClassName = computed(() => {
@@ -412,87 +374,217 @@ const getCabinClassName = computed(() => {
     business: '商务舱',
     first: '头等舱'
   }
-  return map[bookingForm.value.cabinClass]
+  return map[selectedCabinClass.value]
 })
 
-const ticketPrice = computed(() => {
+// 单张票价
+const singleTicketPrice = computed(() => {
   if (!selectedFlight.value) return 0
   const priceMap = {
     economy: selectedFlight.value.price,
     business: Math.round(selectedFlight.value.price * 2.5),
     first: Math.round(selectedFlight.value.price * 4)
   }
-  return priceMap[bookingForm.value.cabinClass]
+  return priceMap[selectedCabinClass.value]
+})
+
+// 计算所有乘客的票价总和(儿童和婴儿有折扣)
+const totalTicketPrice = computed(() => {
+  return passengers.value.reduce((total, passenger) => {
+    let price = singleTicketPrice.value
+    if (passenger.passengerType === 'child') {
+      price = Math.round(price * 0.5) // 儿童半价
+    } else if (passenger.passengerType === 'infant') {
+      price = Math.round(price * 0.1) // 婴儿10%
+    }
+    return total + price
+  }, 0)
+})
+
+// 乘客价格明细
+const passengerBreakdown = computed(() => {
+  const breakdown: { label: string; price: number }[] = []
+  const counts = { adult: 0, child: 0, infant: 0 }
+  
+  passengers.value.forEach(p => {
+    counts[p.passengerType]++
+  })
+  
+  if (counts.adult > 0) {
+    breakdown.push({
+      label: `成人 × ${counts.adult}`,
+      price: singleTicketPrice.value * counts.adult
+    })
+  }
+  if (counts.child > 0) {
+    breakdown.push({
+      label: `儿童 × ${counts.child}`,
+      price: Math.round(singleTicketPrice.value * 0.5) * counts.child
+    })
+  }
+  if (counts.infant > 0) {
+    breakdown.push({
+      label: `婴儿 × ${counts.infant}`,
+      price: Math.round(singleTicketPrice.value * 0.1) * counts.infant
+    })
+  }
+  
+  return breakdown
+})
+
+// 服务明细
+const serviceDetails = computed(() => {
+  const details: { name: string; price: number }[] = []
+  
+  if (services.value.extraBaggage) {
+    const prices = { '10': 150, '20': 280, '30': 400 }
+    details.push({
+      name: `额外行李 ${services.value.baggageWeight}kg`,
+      price: prices[services.value.baggageWeight as keyof typeof prices]
+    })
+  }
+  
+  if (services.value.insurance) {
+    const prices = { basic: 30, premium: 60 }
+    const names = { basic: '基础保险', premium: '尊享保险' }
+    details.push({
+      name: names[services.value.insuranceType as keyof typeof names],
+      price: prices[services.value.insuranceType as keyof typeof prices]
+    })
+  }
+  
+  if (services.value.meal) {
+    details.push({
+      name: '机上餐食',
+      price: 50
+    })
+  }
+  
+  if (services.value.lounge) {
+    details.push({
+      name: '贵宾休息室',
+      price: 120
+    })
+  }
+  
+  return details
 })
 
 const totalPrice = computed(() => {
-  return ticketPrice.value + 50 + 30 // 机票 + 建设费 + 燃油费
+  const airportFee = passengers.value.length * 50
+  const fuelSurcharge = passengers.value.length * 30
+  return totalTicketPrice.value + airportFee + fuelSurcharge + servicePrice.value
 })
 
+const flightInfoForPrice = computed(() => ({
+  flightNo: selectedFlight.value?.flightNo || '',
+  departureCity: selectedFlight.value?.departureCity || '',
+  arrivalCity: selectedFlight.value?.arrivalCity || '',
+  date: selectedFlight.value?.date || ''
+}))
+
 // 方法
-const handleSameAsPassenger = () => {
-  if (sameAsPassenger.value) {
-    bookingForm.value.contactName = bookingForm.value.passengerName
-    bookingForm.value.contactPhone = bookingForm.value.phone
+const addPassenger = () => {
+  if (passengers.value.length < maxPassengers) {
+    passengers.value.push({
+      name: '',
+      idType: 'idCard',
+      idCard: '',
+      phone: '',
+      passengerType: 'adult'
+    })
   }
 }
 
+const deletePassenger = (index: number) => {
+  if (passengers.value.length > 1) {
+    passengers.value.splice(index, 1)
+    delete passengerErrors.value[index]
+  }
+}
+
+const updatePassengerField = (index: number, field: keyof Passenger, value: string) => {
+  passengers.value[index][field] = value as any
+  // 清除该字段的错误
+  if (passengerErrors.value[index]?.[field]) {
+    delete passengerErrors.value[index][field]
+  }
+}
+
+const handleSameAsPassenger = () => {
+  if (sameAsPassenger.value && passengers.value.length > 0) {
+    contactInfo.value.name = passengers.value[0].name
+    contactInfo.value.phone = passengers.value[0].phone
+  }
+}
+
+const handleServiceUpdate = (updatedServices: typeof services.value, price: number) => {
+  services.value = updatedServices
+  servicePrice.value = price
+}
+
 const validateForm = (): boolean => {
-  errors.value = {}
+  passengerErrors.value = {}
+  contactErrors.value = {}
   let isValid = true
 
-  // 乘客姓名
-  if (!bookingForm.value.passengerName.trim()) {
-    errors.value.passengerName = '请输入乘客姓名'
+  // 验证每个乘客
+  passengers.value.forEach((passenger, index) => {
+    const errors: Record<string, string> = {}
+
+    // 姓名
+    if (!passenger.name.trim()) {
+      errors.name = '请输入乘客姓名'
+      isValid = false
+    }
+
+    // 证件号
+    if (!passenger.idCard.trim()) {
+      errors.idCard = '请输入证件号码'
+      isValid = false
+    } else if (passenger.idType === 'idCard') {
+      const idCardRegex = /^[1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/
+      if (!idCardRegex.test(passenger.idCard)) {
+        errors.idCard = '请输入正确的18位身份证号'
+        isValid = false
+      }
+    }
+
+    // 手机号
+    const phoneRegex = /^1[3-9]\d{9}$/
+    if (!passenger.phone.trim()) {
+      errors.phone = '请输入手机号'
+      isValid = false
+    } else if (!phoneRegex.test(passenger.phone)) {
+      errors.phone = '请输入正确的11位手机号'
+      isValid = false
+    }
+
+    if (Object.keys(errors).length > 0) {
+      passengerErrors.value[index] = errors
+    }
+  })
+
+  // 验证联系人
+  if (!contactInfo.value.name.trim()) {
+    contactErrors.value.name = '请输入联系人姓名'
     isValid = false
   }
 
-  // 身份证
-  const idCardRegex = /^[1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/
-  if (!bookingForm.value.idCard.trim()) {
-    errors.value.idCard = '请输入身份证号'
-    isValid = false
-  } else if (!idCardRegex.test(bookingForm.value.idCard)) {
-    errors.value.idCard = '请输入正确的18位身份证号'
-    isValid = false
-  }
-
-  // 手机号
   const phoneRegex = /^1[3-9]\d{9}$/
-  if (!bookingForm.value.phone.trim()) {
-    errors.value.phone = '请输入手机号'
+  if (!contactInfo.value.phone.trim()) {
+    contactErrors.value.phone = '请输入联系电话'
     isValid = false
-  } else if (!phoneRegex.test(bookingForm.value.phone)) {
-    errors.value.phone = '请输入正确的11位手机号'
-    isValid = false
-  }
-
-  // 舱位
-  if (!bookingForm.value.cabinClass) {
-    errors.value.cabinClass = '请选择舱位等级'
+  } else if (!phoneRegex.test(contactInfo.value.phone)) {
+    contactErrors.value.phone = '请输入正确的11位联系电话'
     isValid = false
   }
 
-  // 联系人姓名
-  if (!bookingForm.value.contactName.trim()) {
-    errors.value.contactName = '请输入联系人姓名'
-    isValid = false
-  }
-
-  // 联系电话
-  if (!bookingForm.value.contactPhone.trim()) {
-    errors.value.contactPhone = '请输入联系电话'
-    isValid = false
-  } else if (!phoneRegex.test(bookingForm.value.contactPhone)) {
-    errors.value.contactPhone = '请输入正确的11位联系电话'
-    isValid = false
-  }
-
-  // 邮箱（选填，但如果填了要验证）
-  if (bookingForm.value.email.trim()) {
+  // 邮箱（选填）
+  if (contactInfo.value.email.trim()) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(bookingForm.value.email)) {
-      errors.value.email = '请输入正确的邮箱地址'
+    if (!emailRegex.test(contactInfo.value.email)) {
+      contactErrors.value.email = '请输入正确的邮箱地址'
       isValid = false
     }
   }
@@ -501,7 +593,11 @@ const validateForm = (): boolean => {
 }
 
 const handleSubmit = async () => {
-  if (!validateForm() || !selectedFlight.value) return
+  if (!validateForm() || !selectedFlight.value) {
+    // 滚动到第一个错误位置
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
 
   submitting.value = true
 
@@ -509,21 +605,22 @@ const handleSubmit = async () => {
     // 创建订单数据
     const orderData = {
       flightId: selectedFlight.value.id,
-      passengers: [
-        {
-          name: bookingForm.value.passengerName,
-          idCard: bookingForm.value.idCard,
-          phone: bookingForm.value.phone,
-          passengerType: 'adult' as const
-        }
-      ],
-      cabinClass: bookingForm.value.cabinClass,
-      contactName: bookingForm.value.contactName,
-      contactPhone: bookingForm.value.contactPhone,
-      contactEmail: bookingForm.value.email || ''
+      passengers: passengers.value.map(p => ({
+        name: p.name,
+        idType: p.idType,
+        idCard: p.idCard,
+        phone: p.phone,
+        passengerType: p.passengerType
+      })),
+      cabinClass: selectedCabinClass.value,
+      contactName: contactInfo.value.name,
+      contactPhone: contactInfo.value.phone,
+      contactEmail: contactInfo.value.email || '',
+      services: services.value,
+      totalPrice: totalPrice.value
     }
 
-    // 调用 API 创建订单（这里使用 Mock）
+    // 调用 API 创建订单
     const result = await orderStore.createOrder(orderData)
 
     if (result.success && result.data) {
