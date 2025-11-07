@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <AppHeader />
     <div class="container mx-auto px-4 py-8">
       <!-- 加载状态 -->
       <div v-if="loading" class="flex items-center justify-center py-12">
@@ -304,6 +305,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useFlightStore } from '@/stores/flight'
 import { useOrderStore } from '@/stores/order'
 import type { Flight } from '@/types/flight'
+import AppHeader from '@/components/AppHeader.vue'
 import { formatTime, formatDate } from '@/utils/format'
 import PassengerForm from '@/components/PassengerForm.vue'
 import ServiceSelector from '@/components/ServiceSelector.vue'
@@ -504,7 +506,14 @@ const deletePassenger = (index: number) => {
 }
 
 const updatePassengerField = (index: number, field: keyof Passenger, value: string) => {
-  passengers.value[index][field] = value as any
+  const passenger = passengers.value[index]
+  if (field === 'name' || field === 'idCard' || field === 'phone') {
+    passenger[field] = value
+  } else if (field === 'idType') {
+    passenger[field] = value as 'idCard' | 'passport' | 'other'
+  } else if (field === 'passengerType') {
+    passenger[field] = value as 'adult' | 'child' | 'infant'
+  }
   // 清除该字段的错误
   if (passengerErrors.value[index]?.[field]) {
     delete passengerErrors.value[index][field]

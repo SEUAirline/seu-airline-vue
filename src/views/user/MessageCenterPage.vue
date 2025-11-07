@@ -1,5 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
+  <div class="min-h-screen bg-gray-50">
+    <AppHeader />
+    <div class="py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- 页面标题 -->
       <div class="mb-6">
@@ -258,6 +260,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -267,6 +270,7 @@ import { useRouter } from 'vue-router'
 import { useMessageStore } from '@/stores/message'
 import { MessageType } from '@/types/message'
 import type { Message } from '@/types/message'
+import AppHeader from '@/components/AppHeader.vue'
 
 // ========== 状态 ==========
 

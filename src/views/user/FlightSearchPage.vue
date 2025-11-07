@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <AppHeader />
     <div class="container mx-auto px-4 py-8">
       <!-- 搜索条件摘要 -->
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -161,6 +162,7 @@ import FlightCard from '@/components/FlightCard.vue'
 import FlightFilter from '@/components/FlightFilter.vue'
 import Pagination from '@/components/Pagination.vue'
 import FlightDetailModal from '@/components/FlightDetailModal.vue'
+import AppHeader from '@/components/AppHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
