@@ -10,5 +10,5 @@
 
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
-// 占位页面 - 待实现
+// 占位页面 - 用户个人中心页面转移至ProfilePage.vue
 </script>

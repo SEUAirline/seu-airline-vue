@@ -3,52 +3,239 @@
     <!-- 顶部导航栏 -->
     <AppHeader />
     
-    <div class="container mx-auto px-4 py-8">
+    <!-- 主要内容区 -->
+    <main class="container mx-auto px-4 py-6">
       <!-- 加载状态 -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <div v-else class="max-w-6xl mx-auto">
-        <!-- 用户信息卡片 -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-8 mb-6 text-white">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-6">
-              <!-- 头像 -->
-              <div class="relative">
+      <div v-else class="flex flex-col md:flex-row gap-6">
+        <!-- 左侧导航栏 -->
+        <div class="md:w-64 lg:w-72 shrink-0">
+          <div class="bg-white rounded-lg shadow-md p-5">
+            <!-- 用户头像和基本信息 -->
+            <div class="flex flex-col items-center mb-6">
+              <div class="relative mb-3">
                 <img
-                  :src="userInfo.avatar"
-                  alt="头像"
-                  class="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+                  :src="userInfo.avatar || 'https://picsum.photos/100/100'"
+                  alt="用户头像"
+                  class="w-24 h-24 rounded-full object-cover border-2 border-primary"
                 />
-                <div
-                  class="absolute bottom-0 right-0 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-white"
-                  :title="`${userInfo.level === 'gold' ? '金卡' : userInfo.level === 'silver' ? '银卡' : '普通'}会员`"
-                >
-                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                <div class="absolute bottom-0 right-0 bg-primary text-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
               </div>
-
-              <!-- 用户信息 -->
-              <div>
-                <h2 class="text-2xl font-bold mb-2">{{ userInfo.nickname }}</h2>
-                <p class="text-blue-100 mb-1">用户名: {{ userInfo.username }}</p>
-                <p class="text-blue-100">注册时间: {{ userInfo.createTime }}</p>
-              </div>
+              <h3 class="text-lg font-medium">{{ userInfo.nickname || userInfo.username }}</h3>
+              <p class="text-sm text-gray-500">{{ userInfo.level === 'gold' ? '金卡会员' : userInfo.level === 'silver' ? '银卡会员' : '普通会员' }}</p>
             </div>
 
-            <!-- 积分信息 -->
-            <div class="text-right">
-              <div class="text-3xl font-bold mb-1">{{ userInfo.points }}</div>
-              <div class="text-blue-100">积分余额</div>
+            <!-- 侧边栏导航 -->
+            <div class="space-y-2">
+              <a
+                href="#"
+                :class="['flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-primary transition-all duration-200 rounded-lg', activeTab === 'info' ? 'bg-blue-50 text-primary font-medium' : '']"
+                @click.prevent="activeTab = 'info'"
+              >
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span>个人信息</span>
+              </a>
+              <a
+                href="#"
+                :class="['flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-primary transition-all duration-200 rounded-lg', activeTab === 'security' ? 'bg-blue-50 text-primary font-medium' : '']"
+                @click.prevent="activeTab = 'security'"
+              >
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>账户安全</span>
+              </a>
+              <router-link
+                to="/user/passengers"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-primary transition-all duration-200 rounded-lg"
+              >
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>常用旅客</span>
+              </router-link>
+              <a
+                href="#"
+                :class="['flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-primary transition-all duration-200 rounded-lg', activeTab === 'favorites' ? 'bg-blue-50 text-primary font-medium' : '']"
+                @click.prevent="activeTab = 'favorites'"
+              >
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <span>我的收藏</span>
+              </a>
+              <router-link
+                to="/user/settings"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-primary transition-all duration-200 rounded-lg"
+              >
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>设置</span>
+              </router-link>
             </div>
           </div>
         </div>
 
-        <!-- 快捷入口 -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <!-- 右侧内容区 -->
+        <div class="flex-1">
+          <!-- 个人信息标签页 -->
+          <div v-if="activeTab === 'info'" class="bg-white rounded-lg shadow-sm p-5 border border-gray-100 mb-6">
+            <h2 class="text-xl font-medium mb-4">基本信息</h2>
+            <form @submit.prevent="handleSaveProfile">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+                  <input
+                    v-model="profileForm.fullName"
+                    type="text"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">身份证号</label>
+                  <input
+                    v-model="profileForm.idCard"
+                    type="text"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">手机号</label>
+                  <input
+                    v-model="profileForm.phone"
+                    type="tel"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+                  <input
+                    v-model="profileForm.email"
+                    type="email"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">性别</label>
+                  <div class="flex items-center space-x-4 pt-1">
+                    <label class="inline-flex items-center">
+                      <input
+                        v-model="profileForm.gender"
+                        type="radio"
+                        value="male"
+                        class="text-primary focus:ring-primary"
+                      />
+                      <span class="ml-2">男</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                      <input
+                        v-model="profileForm.gender"
+                        type="radio"
+                        value="female"
+                        class="text-primary focus:ring-primary"
+                      />
+                      <span class="ml-2">女</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">生日</label>
+                  <input
+                    v-model="profileForm.birthday"
+                    type="date"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" class="bg-white text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-300 mr-3">取消</button>
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-all duration-300">保存修改</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- 账户安全标签页 -->
+          <div v-if="activeTab === 'security'" class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+            <h2 class="text-xl font-medium mb-4">账户安全</h2>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <div>
+                  <h3 class="font-medium">登录密码</h3>
+                  <p class="text-sm text-gray-500 mt-1">定期修改密码可提高账户安全性</p>
+                </div>
+                <button class="bg-white text-primary border border-primary px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-300">修改密码</button>
+              </div>
+              <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <div>
+                  <h3 class="font-medium">手机验证</h3>
+                  <p class="text-sm text-gray-500 mt-1">{{ userInfo.phone || '未绑定' }}</p>
+                </div>
+                <button class="text-primary font-medium">
+                  <svg class="w-5 h-5 inline text-green-600 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  已验证
+                </button>
+              </div>
+              <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <div>
+                  <h3 class="font-medium">邮箱验证</h3>
+                  <p class="text-sm text-gray-500 mt-1">{{ userInfo.email || '未绑定' }}</p>
+                </div>
+                <button class="text-primary font-medium">
+                  <svg class="w-5 h-5 inline text-green-600 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  已验证
+                </button>
+              </div>
+              <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <div>
+                  <h3 class="font-medium">实名认证</h3>
+                  <p class="text-sm text-gray-500 mt-1">{{ userInfo.fullName || '未认证' }}{{ userInfo.idCard ? '，' + userInfo.idCard : '' }}</p>
+                </div>
+                <button class="text-primary font-medium">
+                  <svg class="w-5 h-5 inline text-green-600 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  已认证
+                </button>
+              </div>
+              <div class="flex justify-between items-center py-3">
+                <div>
+                  <h3 class="font-medium">支付密码</h3>
+                  <p class="text-sm text-gray-500 mt-1">设置支付密码保护您的资金安全</p>
+                </div>
+                <button class="bg-white text-primary border border-primary px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-300">立即设置</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 我的收藏标签页 -->
+          <div v-if="activeTab === 'favorites'" class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+            <h2 class="text-xl font-medium mb-4">我的收藏</h2>
+            <div class="text-center py-12 text-gray-500">
+              <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <p>暂无收藏</p>
+            </div>
+          </div>
+
+          <!-- 快捷入口 -->
+          <div v-if="activeTab === 'info'" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <router-link
             to="/user/orders"
             class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer"
@@ -107,10 +294,10 @@
             </div>
             <div class="text-gray-600 font-medium">账号设置</div>
           </router-link>
-        </div>
+          </div>
 
-        <!-- 订单统计 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+          <!-- 订单统计 -->
+          <div v-if="activeTab === 'info'" class="bg-white rounded-lg shadow-md p-6 mb-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">订单统计</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="text-center p-4 bg-gray-50 rounded-lg">
@@ -132,8 +319,8 @@
           </div>
         </div>
 
-        <!-- 最近订单 -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+          <!-- 最近订单 -->
+          <div v-if="activeTab === 'info'" class="bg-white rounded-lg shadow-md p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">最近订单</h3>
             <router-link to="/user/orders" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
@@ -186,8 +373,9 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -201,6 +389,7 @@ const router = useRouter()
 
 // 状态
 const loading = ref(true)
+const activeTab = ref('info') // 当前激活的标签页
 const userInfo = ref<any>({})
 const orderStats = ref({
   total: 0,
@@ -211,6 +400,16 @@ const orderStats = ref({
 })
 const recentOrders = ref<any[]>([])
 const unreadCount = ref(0)
+
+// 个人信息表单
+const profileForm = ref({
+  fullName: '',
+  idCard: '',
+  phone: '',
+  email: '',
+  gender: 'male',
+  birthday: ''
+})
 
 // 获取订单状态文本
 const getOrderStatusText = (status: number) => {
@@ -229,9 +428,34 @@ const loadUserInfo = async () => {
     const response = await request.get('/user/profile')
     if (response.success) {
       userInfo.value = response.data
+      // 填充表单
+      profileForm.value = {
+        fullName: response.data.fullName || '',
+        idCard: response.data.idCard || '',
+        phone: response.data.phone || '',
+        email: response.data.email || '',
+        gender: response.data.gender || 'male',
+        birthday: response.data.birthday || ''
+      }
     }
   } catch (error) {
     console.error('加载用户信息失败:', error)
+  }
+}
+
+// 保存个人信息
+const handleSaveProfile = async () => {
+  try {
+    const response = await request.put('/user/profile', profileForm.value)
+    if (response.success) {
+      alert('个人信息更新成功！')
+      await loadUserInfo()
+    } else {
+      alert(response.message || '更新失败')
+    }
+  } catch (error) {
+    console.error('保存个人信息失败:', error)
+    alert('保存失败，请稍后重试')
   }
 }
 
