@@ -169,22 +169,33 @@
             <div class="bg-white rounded-lg shadow-md p-6">
               <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-semibold text-gray-900">乘客信息</h2>
-                <button
-                  v-if="passengers.length < maxPassengers"
-                  @click="addPassenger"
-                  type="button"
-                  class="flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
-                >
-                  <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                  添加乘客
-                </button>
+                <div class="flex items-center space-x-2">
+                  <button
+                    v-if="passengers.length < maxPassengers"
+                    @click="showFrequentPassengers = true"
+                    type="button"
+                    class="flex items-center px-4 py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-user-friends mr-1"></i>
+                    选择常用旅客
+                  </button>
+                  <button
+                    v-if="passengers.length < maxPassengers"
+                    @click="addPassenger"
+                    type="button"
+                    class="flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  >
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                    手动添加
+                  </button>
+                </div>
               </div>
 
               <div class="space-y-4">
@@ -296,14 +307,109 @@
         </div>
       </div>
     </div>
+
+    <!-- 常用旅客选择弹窗 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showFrequentPassengers"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+          @click.self="showFrequentPassengers = false"
+        >
+          <div
+            class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col"
+            @click.stop
+          >
+            <!-- 弹窗头部 -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 class="text-xl font-semibold text-gray-900">选择常用旅客</h3>
+              <button
+                @click="showFrequentPassengers = false"
+                class="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+
+            <!-- 加载状态 -->
+            <div v-if="loadingFrequentPassengers" class="flex items-center justify-center py-12">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+
+            <!-- 旅客列表 -->
+            <div v-else-if="frequentPassengers.length > 0" class="flex-1 overflow-y-auto p-6">
+              <div class="space-y-3">
+                <div
+                  v-for="passenger in frequentPassengers"
+                  :key="passenger.id"
+                  class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
+                  @click="selectFrequentPassenger(passenger)"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-2 mb-2">
+                        <h4 class="font-semibold text-gray-900">{{ passenger.name }}</h4>
+                        <span
+                          v-if="passenger.isDefault"
+                          class="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full"
+                        >
+                          默认
+                        </span>
+                        <span class="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
+                          {{ getPassengerTypeText(passenger.passengerType) }}
+                        </span>
+                      </div>
+                      <div class="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                        <div>
+                          <span class="text-gray-500">证件:</span>
+                          <span class="ml-1">{{ getIdTypeText(passenger.idType) }}</span>
+                        </div>
+                        <div>
+                          <span class="text-gray-500">证件号:</span>
+                          <span class="ml-1">{{ passenger.idNumber }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 空状态 -->
+            <div v-else class="flex-1 flex flex-col items-center justify-center py-12">
+              <i class="fas fa-user-friends text-gray-300 text-5xl mb-4"></i>
+              <p class="text-gray-500 mb-4">暂无常用旅客</p>
+              <button
+                @click="goToPassengersPage"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                去添加常用旅客
+              </button>
+            </div>
+
+            <!-- 底部按钮 -->
+            <div class="p-6 border-t border-gray-200">
+              <button
+                @click="showFrequentPassengers = false"
+                class="w-full px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFlightStore } from '@/stores/flight'
 import { useOrderStore } from '@/stores/order'
+import { request } from '@/api/client'
 import type { Flight } from '@/types/flight'
 import AppHeader from '@/components/AppHeader.vue'
 import { formatTime, formatDate } from '@/utils/format'
@@ -322,6 +428,11 @@ const submitting = ref(false)
 const selectedFlight = ref<Flight | null>(null)
 const sameAsPassenger = ref(false)
 const maxPassengers = 9 // 最多9名乘客
+
+// 常用旅客相关
+const showFrequentPassengers = ref(false)
+const loadingFrequentPassengers = ref(false)
+const frequentPassengers = ref<any[]>([])
 
 // 乘客列表
 interface Passenger {
@@ -498,6 +609,75 @@ const addPassenger = () => {
   }
 }
 
+// 加载常用旅客
+const loadFrequentPassengers = async () => {
+  loadingFrequentPassengers.value = true
+  try {
+    const response = await request.get('/passengers')
+    if (response.success) {
+      frequentPassengers.value = response.data || []
+    }
+  } catch (error) {
+    console.error('加载常用旅客失败:', error)
+  } finally {
+    loadingFrequentPassengers.value = false
+  }
+}
+
+// 选择常用旅客
+const selectFrequentPassenger = (passenger: any) => {
+  if (passengers.value.length >= maxPassengers) {
+    alert('已达到最大乘客数量')
+    return
+  }
+
+  // 将常用旅客信息添加到乘客列表
+  passengers.value.push({
+    name: passenger.name,
+    idType: passenger.idType === 'ID_CARD' ? 'idCard' : passenger.idType === 'PASSPORT' ? 'passport' : 'other',
+    idCard: passenger.idNumber,
+    phone: passenger.phone || '',
+    passengerType: passenger.passengerType || 'adult'
+  })
+
+  showFrequentPassengers.value = false
+}
+
+// 获取证件类型文本
+const getIdTypeText = (type: string) => {
+  const typeMap: Record<string, string> = {
+    ID_CARD: '身份证',
+    PASSPORT: '护照',
+    OTHER: '其他',
+    idCard: '身份证',
+    passport: '护照',
+    other: '其他'
+  }
+  return typeMap[type] || type
+}
+
+// 获取旅客类型文本
+const getPassengerTypeText = (type: string) => {
+  const typeMap: Record<string, string> = {
+    adult: '成人',
+    child: '儿童',
+    infant: '婴儿'
+  }
+  return typeMap[type] || type
+}
+
+// 跳转到常用旅客页面
+const goToPassengersPage = () => {
+  router.push('/user/passengers')
+}
+
+// 监听弹窗打开,加载常用旅客
+watch(showFrequentPassengers, (newVal) => {
+  if (newVal && frequentPassengers.value.length === 0) {
+    loadFrequentPassengers()
+  }
+})
+
 const deletePassenger = (index: number) => {
   if (passengers.value.length > 1) {
     passengers.value.splice(index, 1)
@@ -667,3 +847,26 @@ onMounted(async () => {
   loading.value = false
 })
 </script>
+
+<style scoped>
+/* 模态框动画 */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active > div,
+.modal-leave-active > div {
+  transition: transform 0.3s ease;
+}
+
+.modal-enter-from > div,
+.modal-leave-to > div {
+  transform: scale(0.9);
+}
+</style>

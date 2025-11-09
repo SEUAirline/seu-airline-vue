@@ -6,7 +6,7 @@
       <!-- 页面标题 -->
       <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">我的订单</h1>
-        <p class="text-sm text-gray-600 mt-1">查看和管理您的所有订单</p>
+        <p class="text-sm text-gray-600 mt-1">查看和管理您的当前订单</p>
       </div>
 
       <!-- 订单状态筛选 -->
@@ -175,7 +175,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import OrderCard from '@/components/OrderCard.vue'
 import OrderDetailModal from '@/components/OrderDetailModal.vue'
@@ -184,6 +184,7 @@ import type { Order } from '@/types/order'
 import { orderApi } from '@/api/order'
 
 const router = useRouter()
+const route = useRoute()
 
 // 订单状态选项
 const orderStatuses = [
@@ -212,16 +213,25 @@ const cancelling = ref(false)
 
 // 计算属性：筛选后的订单
 const filteredOrders = computed(() => {
+  console.log('🔍 开始筛选订单...')
+  console.log('📊 原始订单数:', orders.value.length)
+  console.log('🏷️ 当前状态筛选:', currentStatus.value)
+  console.log('🔎 搜索关键词:', searchKeyword.value)
+  console.log('📅 时间范围:', timeRange.value)
+  
   let result = orders.value
 
   // 按状态筛选
   if (currentStatus.value !== 'all') {
+    const beforeFilter = result.length
     result = result.filter(order => order.status === currentStatus.value)
+    console.log(`📌 状态筛选: ${beforeFilter} → ${result.length} (筛选条件: ${currentStatus.value})`)
   }
 
   // 按关键词搜索
   if (searchKeyword.value.trim()) {
     const keyword = searchKeyword.value.trim().toLowerCase()
+    const beforeFilter = result.length
     result = result.filter(order => {
       return (
         order.id.toLowerCase().includes(keyword) ||
@@ -229,6 +239,7 @@ const filteredOrders = computed(() => {
         order.passengers.some(p => p.name.toLowerCase().includes(keyword))
       )
     })
+    console.log(`🔎 关键词筛选: ${beforeFilter} → ${result.length} (关键词: ${keyword})`)
   }
 
   // 按时间范围筛选
@@ -241,17 +252,26 @@ const filteredOrders = computed(() => {
     }
     const range = ranges[timeRange.value]
     if (range) {
+      const beforeFilter = result.length
       result = result.filter(order => {
         const orderTime = new Date(order.createTime).getTime()
         return now - orderTime <= range
       })
+      console.log(`📅 时间筛选: ${beforeFilter} → ${result.length} (范围: ${timeRange.value})`)
     }
   }
 
   // 按创建时间倒序排序
-  return result.sort((a, b) => {
+  result = result.sort((a, b) => {
     return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
   })
+  
+  console.log('✅ 筛选完成, 最终订单数:', result.length)
+  if (result.length > 0) {
+    console.log('📝 筛选后的订单:', result)
+  }
+  
+  return result
 })
 
 // 计算属性：分页后的订单
@@ -263,16 +283,27 @@ const paginatedOrders = computed(() => {
 
 // 加载订单列表
 async function loadOrders() {
+  console.log('🔄 开始加载订单列表...')
   loading.value = true
   try {
     const response = await orderApi.getUserOrders()
+    console.log('📦 API响应:', response)
+    console.log('✅ 响应成功?', response.success)
+    console.log('📊 响应数据:', response.data)
+    console.log('📋 数据类型:', typeof response.data, Array.isArray(response.data) ? '是数组' : '不是数组')
+    
     if (response.success && response.data) {
       orders.value = response.data
+      console.log('✅ 订单已设置, 数量:', orders.value.length)
+      console.log('📝 订单详情:', orders.value)
+    } else {
+      console.warn('⚠️ 响应失败或无数据')
     }
   } catch (error) {
-    console.error('加载订单列表失败:', error)
+    console.error('❌ 加载订单列表失败:', error)
   } finally {
     loading.value = false
+    console.log('🏁 加载完成, 当前订单数:', orders.value.length)
   }
 }
 
@@ -345,6 +376,7 @@ async function confirmCancelOrder() {
 // 在线值机
 function handleCheckIn(orderId: string) {
   // TODO: 实现在线值机功能
+  console.log('在线值机订单ID:', orderId)
   alert('在线值机功能开发中...')
 }
 
@@ -373,8 +405,20 @@ function getEmptyStateMessage(): string {
   return '您还没有任何订单,快去预订航班吧!'
 }
 
-// 组件挂载时加载订单
+// 组件挂载时加载订单并处理路由参数
 onMounted(() => {
+  console.log('🚀 OrdersPage 组件已挂载')
+  console.log('🔗 路由参数:', route.query)
+  
+  // 处理路由参数中的status
+  const statusParam = route.query.status as string
+  if (statusParam && orderStatuses.some(s => s.value === statusParam)) {
+    currentStatus.value = statusParam
+    console.log('✅ 应用路由状态参数:', statusParam)
+  } else {
+    console.log('ℹ️ 无路由状态参数或参数无效, 使用默认值: all')
+  }
+  
   loadOrders()
 })
 </script>

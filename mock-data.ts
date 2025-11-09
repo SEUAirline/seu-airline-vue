@@ -228,18 +228,22 @@ export function handleMockRequest(req: any, res: any): boolean {
         userId: 1,
         flightId: data.items?.[0]?.flightId || 'flight_1',
         flightNo: 'CA1234',
-        departureCity: '北京',
+        departureCity: '南京',
         arrivalCity: '上海',
-        departureTime: '2025-11-07 10:00',
-        arrivalTime: '2025-11-07 12:00',
+        departureTime: '2025-11-10 08:00',
+        arrivalTime: '2025-11-10 10:30',
+        date: '2025-11-10',
+        cabinClass: data.items?.[0]?.cabinClass || 'economy',
         passengers: data.items || [],
         passengerCount: data.items?.length || 1,
         totalPrice: data.items?.reduce((sum: number, item: any) => sum + (item.price || 800), 0) || 800,
-        status: 0, // 待支付
+        status: 1, // 1: 待支付
         paymentMethod: null,
         createTime: new Date().toISOString(),
         payTime: null
       }
+      
+      console.log('✅ 订单已创建:', order)
       orders.push(order)
 
       res.setHeader('Content-Type', 'application/json')
@@ -278,12 +282,36 @@ export function handleMockRequest(req: any, res: any): boolean {
       return true
     }
 
+    // 转换为前端期望的格式
+    const formattedOrder = {
+      id: order.id,
+      orderNo: order.orderNo,
+      flightNo: order.flightNo || 'CA1234',
+      departureCity: order.departureCity || '南京',
+      arrivalCity: order.arrivalCity || '上海',
+      departureTime: order.departureTime || '2025-11-10 08:00',
+      arrivalTime: order.arrivalTime || '2025-11-10 10:30',
+      date: order.date || '2025-11-10',
+      status: order.status === 1 ? 'pending' : 
+              order.status === 2 ? 'paid' : 
+              order.status === 3 ? 'completed' : 'cancelled',
+      cabinClass: order.cabinClass || 'economy',
+      price: order.totalPrice || 0,
+      totalAmount: order.totalPrice || 0,
+      passengers: order.passengers || [],
+      createTime: order.createTime,
+      payTime: order.payTime,
+      paymentMethod: order.paymentMethod
+    }
+
+    console.log('📋 返回订单详情:', formattedOrder)
+
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({
       code: 200,
       message: '查询成功',
       success: true,
-      data: order
+      data: formattedOrder
     }))
     return true
   }
@@ -316,6 +344,54 @@ export function handleMockRequest(req: any, res: any): boolean {
         orderId: order.id,
         orderNo: order.orderNo,
         payTime: order.payTime
+      }
+    }))
+    return true
+  }
+
+  // 取消订单
+  if (pathname?.includes('/cancel') && req.method === 'PUT') {
+    const orderId = pathname.split('/')[3]
+    const order = orders.find(o => o.id === orderId)
+
+    if (!order) {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 404,
+        message: '订单不存在',
+        success: false,
+        data: null
+      }))
+      return true
+    }
+
+    // 检查订单状态是否可以取消
+    if (order.status !== 1 && order.status !== 2) {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        code: 400,
+        message: '该订单状态不允许取消',
+        success: false,
+        data: null
+      }))
+      return true
+    }
+
+    // 模拟取消订单
+    order.status = 4 // 4: 已取消
+    order.cancelTime = new Date().toISOString()
+
+    console.log('✅ 订单已取消:', order)
+
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: '订单取消成功',
+      success: true,
+      data: {
+        orderId: order.id,
+        orderNo: order.orderNo,
+        cancelTime: order.cancelTime
       }
     }))
     return true
@@ -468,8 +544,8 @@ export function handleMockRequest(req: any, res: any): boolean {
     return true
   }
 
-  // 获取用户订单列表
-  if (pathname === '/api/user/orders') {
+  // 获取用户订单列表 (支持两种路径)
+  if (pathname === '/api/user/orders' || pathname === '/api/orders') {
     const { status, page = '1', pageSize = '10' } = query
     let filteredOrders = orders
     
@@ -477,22 +553,35 @@ export function handleMockRequest(req: any, res: any): boolean {
       filteredOrders = orders.filter(o => o.status === parseInt(status as string))
     }
     
-    const pageNum = parseInt(page as string)
-    const size = parseInt(pageSize as string)
-    const start = (pageNum - 1) * size
-    const end = start + size
+    // 将订单数据转换为前端期望的格式
+    const formattedOrders = filteredOrders.map(order => ({
+      id: order.id,
+      orderNo: order.orderNo,
+      flightNo: order.flightNo || 'CA1234',
+      departureCity: order.departureCity || '南京',
+      arrivalCity: order.arrivalCity || '上海',
+      departureTime: order.departureTime || '2025-11-10 08:00',
+      arrivalTime: order.arrivalTime || '2025-11-10 10:30',
+      date: order.date || '2025-11-10',
+      status: order.status === 1 ? 'pending' : 
+              order.status === 2 ? 'paid' : 
+              order.status === 3 ? 'completed' : 'cancelled',
+      cabinClass: order.cabinClass || 'economy',
+      price: order.totalPrice || 0,
+      totalAmount: order.totalPrice || 0,
+      passengers: order.passengers || [],
+      createTime: order.createTime,
+      payTime: order.payTime
+    }))
+    
+    console.log('📋 返回订单列表, 数量:', formattedOrders.length)
     
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({
       code: 200,
       message: '查询成功',
       success: true,
-      data: {
-        list: filteredOrders.slice(start, end),
-        total: filteredOrders.length,
-        page: pageNum,
-        pageSize: size
-      }
+      data: formattedOrders  // 直接返回数组
     }))
     return true
   }

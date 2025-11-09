@@ -117,20 +117,28 @@ export default [
         filteredOrders = filteredOrders.filter(o => o.status === parseInt(status))
       }
 
-      const total = filteredOrders.length
-      const start = (page - 1) * pageSize
-      const end = start + parseInt(pageSize)
-      const list = filteredOrders.slice(start, end)
+      // 将订单数据转换为前端期望的格式
+      const formattedOrders = filteredOrders.map(order => ({
+        id: order.id,
+        orderNo: order.orderNo,
+        flightNo: 'CA1234',
+        departureCity: '南京',
+        arrivalCity: '北京',
+        departureTime: '2025-11-10 08:00',
+        arrivalTime: '2025-11-10 10:30',
+        date: '2025-11-10',
+        status: order.status === 1 ? 'pending' : order.status === 2 ? 'paid' : order.status === 3 ? 'completed' : 'cancelled',
+        totalPrice: order.totalPrice,
+        passengers: order.passengers,
+        createTime: order.createTime,
+        payTime: order.payTime
+      }))
 
+      // 直接返回订单数组,不使用分页结构
       return {
         code: 200,
         message: '查询成功',
-        data: {
-          list,
-          total,
-          page: parseInt(page),
-          pageSize: parseInt(pageSize)
-        },
+        data: formattedOrders,
         success: true
       }
     }

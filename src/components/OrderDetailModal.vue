@@ -5,15 +5,17 @@
       <div
         v-if="visible"
         class="fixed inset-0 z-50 overflow-y-auto"
-        @click.self="handleClose"
       >
-        <!-- 背景遮罩 -->
-        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+        <!-- 背景遮罩 - 点击关闭 -->
+        <div 
+          class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+          @click="handleClose"
+        ></div>
 
         <!-- 弹窗内容 -->
         <div class="flex min-h-full items-center justify-center p-4">
           <div
-            class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col"
             @click.stop
           >
             <!-- 加载状态 -->
@@ -22,23 +24,24 @@
             </div>
 
             <!-- 订单详情内容 -->
-            <div v-else-if="order" class="flex flex-col h-full">
-              <!-- 头部 -->
-              <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <div v-else-if="order" class="flex flex-col min-h-0 flex-1">
+              <!-- 头部 - 固定不滚动 -->
+              <div class="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
                 <div>
                   <h2 class="text-2xl font-bold text-gray-900">订单详情</h2>
                   <p class="text-sm text-gray-500 mt-1">订单号：{{ order.id }}</p>
                 </div>
                 <button
                   @click="handleClose"
-                  class="text-gray-400 hover:text-gray-600 transition-colors"
+                  class="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                  title="关闭 (ESC)"
                 >
                   <i class="fas fa-times text-2xl"></i>
                 </button>
               </div>
 
               <!-- 内容区域 - 可滚动 -->
-              <div class="flex-1 overflow-y-auto p-6 space-y-6">
+              <div class="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
                 <!-- 订单状态 -->
                 <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
                   <div class="flex items-center justify-between">
@@ -228,8 +231,8 @@
                 </div>
               </div>
 
-              <!-- 底部操作按钮 -->
-              <div class="border-t border-gray-200 p-6 bg-gray-50">
+              <!-- 底部操作按钮 - 固定不滚动 -->
+              <div class="border-t border-gray-200 p-6 bg-gray-50 flex-shrink-0">
                 <div class="flex justify-end space-x-3">
                   <button
                     v-if="order.status === 'paid' || order.status === 'completed'"
@@ -281,7 +284,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import type { Order } from '@/types/order'
 import { orderApi } from '@/api/order'
 
@@ -308,6 +311,23 @@ watch(() => props.visible, async (newVal) => {
   }
 })
 
+// ESC键关闭弹窗
+function handleEscKey(event: KeyboardEvent) {
+  if (event.key === 'Escape' && props.visible) {
+    handleClose()
+  }
+}
+
+// 组件挂载时添加键盘事件监听
+onMounted(() => {
+  document.addEventListener('keydown', handleEscKey)
+})
+
+// 组件卸载时移除键盘事件监听
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscKey)
+})
+
 // 加载订单详情
 async function loadOrderDetail() {
   if (!props.orderId) return
@@ -315,11 +335,14 @@ async function loadOrderDetail() {
   loading.value = true
   try {
     const response = await orderApi.getOrderById(props.orderId)
+    console.log('📋 订单详情响应:', response)
     if (response.success && response.data) {
       order.value = response.data
+      console.log('✅ 订单详情已加载:', order.value)
+      console.log('👥 乘客数据:', order.value.passengers)
     }
   } catch (error) {
-    console.error('加载订单详情失败:', error)
+    console.error('❌ 加载订单详情失败:', error)
   } finally {
     loading.value = false
   }
@@ -408,7 +431,8 @@ function getPassengerTypeText(type: string): string {
   return typeMap[type] || '成人'
 }
 
-function maskIdCard(idCard: string): string {
+function maskIdCard(idCard: string | undefined): string {
+  if (!idCard) return '未提供'
   if (idCard.length <= 8) return idCard
   return idCard.substring(0, 6) + '********' + idCard.substring(idCard.length - 4)
 }
