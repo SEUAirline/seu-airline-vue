@@ -189,13 +189,25 @@ const orderStore = useOrderStore()
 const order = ref<any>(null)
 
 onMounted(async () => {
-  const orderId = route.params.orderId as string
+  const orderId = route.params.id as string
+  console.log('订单成功页面加载，订单ID:', orderId)
+
+  if (!orderId) {
+    console.error('URL中没有订单ID!')
+    router.push('/user/orders')
+    return
+  }
 
   // 获取订单信息
   const result = await orderStore.getOrderById(orderId)
+  console.log('获取订单结果:', result)
 
   if (result.success && result.data) {
     order.value = result.data
+    console.log('订单信息已加载:', order.value)
+  } else {
+    console.error('未找到订单信息')
+    router.push('/user/orders')
   }
 })
 </script>

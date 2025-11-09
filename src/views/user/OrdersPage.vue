@@ -1,233 +1,273 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- 顶部导航栏 -->
     <AppHeader />
     
-    <div class="container mx-auto px-4 py-8">
-      <div class="max-w-6xl mx-auto">
-        <!-- 页面标题 -->
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold text-gray-900">我的订单</h1>
-          <p class="text-gray-600 mt-1">查看和管理您的所有订单</p>
-        </div>
+    <main class="container mx-auto px-4 py-6">
+      <!-- 页面标题 -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">我的订单</h1>
+        <p class="text-sm text-gray-600 mt-1">查看和管理您的所有订单</p>
+      </div>
 
-        <!-- 订单筛选标签 -->
-        <div class="bg-white rounded-lg shadow-md mb-6">
-          <div class="flex border-b border-gray-200">
-            <button
-              v-for="tab in tabs"
-              :key="tab.value"
-              @click="currentTab = tab.value"
-              :class="[
-                'flex-1 py-4 px-6 text-center font-medium transition-colors',
-                currentTab === tab.value
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              ]"
-            >
-              {{ tab.label }}
-              <span
-                v-if="tab.count > 0"
-                class="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-600"
-              >
-                {{ tab.count }}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 加载状态 -->
-        <div v-if="loading" class="flex items-center justify-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-
-        <!-- 订单列表 -->
-        <div v-else-if="orders.length > 0" class="space-y-4">
-          <div
-            v-for="order in orders"
-            :key="order.id"
-            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <!-- 订单头部 -->
-            <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-b border-gray-200">
-              <div class="flex items-center space-x-4 text-sm text-gray-600">
-                <span>订单号: <span class="font-medium text-gray-900">{{ order.orderNo }}</span></span>
-                <span>下单时间: {{ order.createTime }}</span>
-              </div>
-              <span
-                :class="[
-                  'px-3 py-1 text-sm font-medium rounded-full',
-                  order.status === 0 ? 'bg-orange-100 text-orange-700' :
-                  order.status === 1 ? 'bg-green-100 text-green-700' :
-                  order.status === 2 ? 'bg-blue-100 text-blue-700' :
-                  'bg-gray-100 text-gray-700'
-                ]"
-              >
-                {{ getOrderStatusText(order.status) }}
-              </span>
-            </div>
-
-            <!-- 订单内容 -->
-            <div class="p-6">
-              <div class="flex items-center justify-between">
-                <!-- 航班信息 -->
-                <div class="flex-1">
-                  <div class="flex items-center space-x-6 mb-4">
-                    <div class="text-center">
-                      <div class="text-2xl font-bold text-gray-900">{{ order.departureTime?.split(' ')[1]?.substring(0, 5) || '--:--' }}</div>
-                      <div class="text-sm text-gray-600 mt-1">{{ order.departureCity }}</div>
-                    </div>
-                    <div class="flex-1 flex flex-col items-center">
-                      <div class="text-sm text-gray-500 mb-1">{{ order.flightNo }}</div>
-                      <div class="w-full h-px bg-gray-300 relative">
-                        <svg class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                      </div>
-                      <div class="text-xs text-gray-500 mt-1">约2小时</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="text-2xl font-bold text-gray-900">{{ order.arrivalTime?.split(' ')[1]?.substring(0, 5) || '--:--' }}</div>
-                      <div class="text-sm text-gray-600 mt-1">{{ order.arrivalCity }}</div>
-                    </div>
-                  </div>
-                  <div class="text-sm text-gray-600">
-                    <span>乘客: {{ order.passengerCount }}人</span>
-                    <span class="mx-2">|</span>
-                    <span>日期: {{ order.departureTime?.split(' ')[0] || '--' }}</span>
-                  </div>
-                </div>
-
-                <!-- 价格和操作 -->
-                <div class="ml-8 text-right">
-                  <div class="text-2xl font-bold text-blue-600 mb-4">¥{{ order.totalPrice }}</div>
-                  <div class="space-y-2">
-                    <button
-                      v-if="order.status === 0"
-                      @click="handlePay(order)"
-                      class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      立即支付
-                    </button>
-                    <button
-                      @click="viewOrderDetail(order)"
-                      class="w-full px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-colors"
-                    >
-                      查看详情
-                    </button>
-                    <button
-                      v-if="order.status === 0"
-                      @click="handleCancel(order)"
-                      class="w-full px-6 py-2 text-red-600 hover:text-red-700 text-sm"
-                    >
-                      取消订单
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 空状态 -->
-        <div v-else class="bg-white rounded-lg shadow-md p-12 text-center">
-          <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">暂无订单</h3>
-          <p class="text-gray-600 mb-6">您还没有任何订单记录</p>
+      <!-- 订单状态筛选 -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6 overflow-x-auto">
+        <div class="flex space-x-1 md:space-x-0 md:justify-around min-w-max md:min-w-0">
           <button
-            @click="router.push('/')"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            v-for="status in orderStatuses"
+            :key="status.value"
+            @click="handleStatusChange(status.value)"
+            :class="[
+              'px-4 py-2 whitespace-nowrap transition-all',
+              currentStatus === status.value
+                ? 'text-blue-600 font-medium border-b-2 border-blue-600'
+                : 'text-gray-500 hover:text-blue-600'
+            ]"
           >
-            去预订航班
-          </button>
-        </div>
-
-        <!-- 分页 -->
-        <div v-if="total > pageSize" class="mt-6 flex items-center justify-center space-x-2">
-          <button
-            @click="changePage(currentPage - 1)"
-            :disabled="currentPage === 1"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            上一页
-          </button>
-          <span class="text-gray-600">
-            第 {{ currentPage }} / {{ totalPages }} 页
-          </span>
-          <button
-            @click="changePage(currentPage + 1)"
-            :disabled="currentPage === totalPages"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            下一页
+            {{ status.label }}
           </button>
         </div>
       </div>
-    </div>
+
+      <!-- 搜索和筛选 -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+          <!-- 搜索框 -->
+          <div class="flex-1 relative">
+            <input
+              v-model="searchKeyword"
+              type="text"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              placeholder="搜索订单号/航班号/乘客姓名"
+              @keyup.enter="handleSearch"
+            />
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          </div>
+          
+          <!-- 时间筛选 -->
+          <div class="flex space-x-3">
+            <div class="relative">
+              <select
+                v-model="timeRange"
+                @change="handleSearch"
+                class="pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
+              >
+                <option value="all">全部时间</option>
+                <option value="week">近一周</option>
+                <option value="month">近一月</option>
+                <option value="quarter">近三月</option>
+              </select>
+              <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+            </div>
+            <button
+              @click="handleSearch"
+              class="px-4 py-2 bg-white text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-all"
+            >
+              <i class="fas fa-filter mr-1"></i> 筛选
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 加载状态 -->
+      <div v-if="loading" class="flex items-center justify-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+
+      <!-- 订单列表 -->
+      <div v-else-if="filteredOrders.length > 0" class="space-y-4">
+        <OrderCard
+          v-for="order in paginatedOrders"
+          :key="order.id"
+          :order="order"
+          @view-detail="handleViewDetail"
+          @pay="handlePay"
+          @cancel="handleCancelOrder"
+          @check-in="handleCheckIn"
+          @rebook="handleRebook"
+        />
+
+        <!-- 分页 -->
+        <Pagination
+          v-if="filteredOrders.length > pageSize"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :total="filteredOrders.length"
+          @page-change="handlePageChange"
+        />
+      </div>
+
+      <!-- 空状态 -->
+      <div v-else class="bg-white rounded-lg shadow-md p-12 text-center">
+        <svg
+          class="w-24 h-24 mx-auto text-gray-300 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">暂无订单</h3>
+        <p class="text-gray-600 mb-6">{{ getEmptyStateMessage() }}</p>
+        <button
+          @click="$router.push('/')"
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          去预订航班
+        </button>
+      </div>
+    </main>
+
+    <!-- 订单详情弹窗 -->
+    <OrderDetailModal
+      v-model:visible="showDetailModal"
+      :order-id="selectedOrderId"
+      @pay="handlePay"
+      @cancel="handleCancelOrder"
+    />
+
+    <!-- 取消订单确认弹窗 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showCancelModal"
+          class="fixed inset-0 z-50 overflow-y-auto"
+          @click.self="showCancelModal = false"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+          <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6" @click.stop>
+              <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                  <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">确认取消订单</h3>
+                <p class="text-sm text-gray-600 mb-6">
+                  取消订单后将无法恢复，确定要取消此订单吗？
+                </p>
+                <div class="flex space-x-3">
+                  <button
+                    @click="showCancelModal = false"
+                    class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all"
+                  >
+                    我再想想
+                  </button>
+                  <button
+                    @click="confirmCancelOrder"
+                    :disabled="cancelling"
+                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all disabled:opacity-50"
+                  >
+                    {{ cancelling ? '取消中...' : '确认取消' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { request } from '@/api/client'
 import AppHeader from '@/components/AppHeader.vue'
+import OrderCard from '@/components/OrderCard.vue'
+import OrderDetailModal from '@/components/OrderDetailModal.vue'
+import Pagination from '@/components/Pagination.vue'
+import type { Order } from '@/types/order'
+import { orderApi } from '@/api/order'
 
 const router = useRouter()
 
-// 状态
-const loading = ref(true)
-const currentTab = ref('all')
-const orders = ref<any[]>([])
+// 订单状态选项
+const orderStatuses = [
+  { label: '全部订单', value: 'all' },
+  { label: '待支付', value: 'pending' },
+  { label: '已支付', value: 'paid' },
+  { label: '已完成', value: 'completed' },
+  { label: '已取消', value: 'cancelled' }
+]
+
+// 状态管理
+const loading = ref(false)
+const orders = ref<Order[]>([])
+const currentStatus = ref<string>('all')
+const searchKeyword = ref('')
+const timeRange = ref('all')
 const currentPage = ref(1)
 const pageSize = ref(10)
-const total = ref(0)
 
-// 标签页配置
-const tabs = ref([
-  { label: '全部订单', value: 'all', count: 0 },
-  { label: '待支付', value: '0', count: 0 },
-  { label: '已支付', value: '1', count: 0 },
-  { label: '已完成', value: '2', count: 0 },
-  { label: '已取消', value: '3', count: 0 }
-])
+// 弹窗状态
+const showDetailModal = ref(false)
+const selectedOrderId = ref<string | null>(null)
+const showCancelModal = ref(false)
+const orderToCancel = ref<string | null>(null)
+const cancelling = ref(false)
 
-// 计算总页数
-const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
+// 计算属性：筛选后的订单
+const filteredOrders = computed(() => {
+  let result = orders.value
 
-// 获取订单状态文本
-const getOrderStatusText = (status: number) => {
-  const statusMap: Record<number, string> = {
-    0: '待支付',
-    1: '已支付',
-    2: '已完成',
-    3: '已取消'
+  // 按状态筛选
+  if (currentStatus.value !== 'all') {
+    result = result.filter(order => order.status === currentStatus.value)
   }
-  return statusMap[status] || '未知'
-}
+
+  // 按关键词搜索
+  if (searchKeyword.value.trim()) {
+    const keyword = searchKeyword.value.trim().toLowerCase()
+    result = result.filter(order => {
+      return (
+        order.id.toLowerCase().includes(keyword) ||
+        order.flightNo.toLowerCase().includes(keyword) ||
+        order.passengers.some(p => p.name.toLowerCase().includes(keyword))
+      )
+    })
+  }
+
+  // 按时间范围筛选
+  if (timeRange.value !== 'all') {
+    const now = Date.now()
+    const ranges: Record<string, number> = {
+      week: 7 * 24 * 60 * 60 * 1000,
+      month: 30 * 24 * 60 * 60 * 1000,
+      quarter: 90 * 24 * 60 * 60 * 1000
+    }
+    const range = ranges[timeRange.value]
+    if (range) {
+      result = result.filter(order => {
+        const orderTime = new Date(order.createTime).getTime()
+        return now - orderTime <= range
+      })
+    }
+  }
+
+  // 按创建时间倒序排序
+  return result.sort((a, b) => {
+    return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
+  })
+})
+
+// 计算属性：分页后的订单
+const paginatedOrders = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return filteredOrders.value.slice(start, end)
+})
 
 // 加载订单列表
-const loadOrders = async () => {
+async function loadOrders() {
   loading.value = true
   try {
-    const params: any = {
-      page: currentPage.value,
-      pageSize: pageSize.value
-    }
-    
-    if (currentTab.value !== 'all') {
-      params.status = currentTab.value
-    }
-
-    const response = await request.get('/user/orders', { params })
-    if (response.success) {
-      orders.value = response.data.list || []
-      total.value = response.data.total || 0
-      
-      // 更新标签计数
-      updateTabCounts()
+    const response = await orderApi.getUserOrders()
+    if (response.success && response.data) {
+      orders.value = response.data
     }
   } catch (error) {
     console.error('加载订单列表失败:', error)
@@ -236,69 +276,118 @@ const loadOrders = async () => {
   }
 }
 
-// 更新标签计数
-const updateTabCounts = async () => {
-  try {
-    const response = await request.get('/user/orders', { params: { pageSize: 1000 } })
-    if (response.success) {
-      const allOrders = response.data.list || []
-      tabs.value[0].count = allOrders.length
-      tabs.value[1].count = allOrders.filter((o: any) => o.status === 0).length
-      tabs.value[2].count = allOrders.filter((o: any) => o.status === 1).length
-      tabs.value[3].count = allOrders.filter((o: any) => o.status === 2).length
-      tabs.value[4].count = allOrders.filter((o: any) => o.status === 3).length
-    }
-  } catch (error) {
-    console.error('更新标签计数失败:', error)
-  }
+// 处理状态切换
+function handleStatusChange(status: string) {
+  currentStatus.value = status
+  currentPage.value = 1 // 重置到第一页
 }
 
-// 切换页码
-const changePage = (page: number) => {
-  if (page < 1 || page > totalPages.value) return
+// 处理搜索
+function handleSearch() {
+  currentPage.value = 1 // 重置到第一页
+}
+
+// 处理分页变化
+function handlePageChange(page: number) {
   currentPage.value = page
-  loadOrders()
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 // 查看订单详情
-const viewOrderDetail = (order: any) => {
-  router.push(`/orders/${order.id}`)
+function handleViewDetail(orderId: string) {
+  selectedOrderId.value = orderId
+  showDetailModal.value = true
 }
 
 // 支付订单
-const handlePay = (order: any) => {
+function handlePay(orderId: string) {
+  // 跳转到支付页面
   router.push({
     name: 'Payment',
-    params: { orderId: order.id }
+    params: { orderId }
   })
 }
 
 // 取消订单
-const handleCancel = async (order: any) => {
-  if (!confirm('确定要取消这个订单吗？')) return
+function handleCancelOrder(orderId: string) {
+  orderToCancel.value = orderId
+  showCancelModal.value = true
+}
 
+// 确认取消订单
+async function confirmCancelOrder() {
+  if (!orderToCancel.value) return
+
+  cancelling.value = true
   try {
-    const response = await request.put(`/orders/${order.id}/cancel`)
+    const response = await orderApi.cancelOrder(orderToCancel.value)
     if (response.success) {
+      // 更新本地订单状态
+      const order = orders.value.find(o => o.id === orderToCancel.value)
+      if (order) {
+        order.status = 'cancelled'
+      }
+      showCancelModal.value = false
       alert('订单已取消')
-      loadOrders()
     } else {
-      alert(response.message || '取消失败')
+      alert(response.message || '取消订单失败')
     }
   } catch (error) {
     console.error('取消订单失败:', error)
-    alert('取消失败，请稍后重试')
+    alert('取消订单失败，请稍后重试')
+  } finally {
+    cancelling.value = false
+    orderToCancel.value = null
   }
 }
 
-// 监听标签切换
-watch(currentTab, () => {
-  currentPage.value = 1
-  loadOrders()
-})
+// 在线值机
+function handleCheckIn(orderId: string) {
+  // TODO: 实现在线值机功能
+  alert('在线值机功能开发中...')
+}
 
-// 初始化
+// 再次预订
+function handleRebook(order: Order) {
+  // 跳转到航班搜索页面，带上航班信息
+  router.push({
+    name: 'FlightSearch',
+    query: {
+      from: order.departureCity,
+      to: order.arrivalCity,
+      date: order.date
+    }
+  })
+}
+
+// 获取空状态提示文本
+function getEmptyStateMessage(): string {
+  if (currentStatus.value !== 'all') {
+    const statusText = orderStatuses.find(s => s.value === currentStatus.value)?.label || '该状态'
+    return `暂无${statusText}的订单`
+  }
+  if (searchKeyword.value.trim()) {
+    return '没有找到匹配的订单'
+  }
+  return '您还没有任何订单,快去预订航班吧!'
+}
+
+// 组件挂载时加载订单
 onMounted(() => {
   loadOrders()
 })
 </script>
+
+<style scoped>
+/* 弹窗动画 */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+</style>
