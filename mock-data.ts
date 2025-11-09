@@ -102,6 +102,28 @@ function generateFlights(departureCity: string, arrivalCity: string, departureDa
 const orders: any[] = []
 let orderIdCounter = 1
 
+// 消息存储
+const messages: any[] = []
+let messageIdCounter = 1
+
+// 创建消息的辅助函数
+function createMessage(type: string, title: string, content: string, relatedId?: string, priority: number = 1) {
+  const message = {
+    id: messageIdCounter++,
+    type,
+    title,
+    content,
+    relatedId,
+    priority,
+    isRead: false,
+    createTime: new Date().toISOString(),
+    readTime: null
+  }
+  messages.unshift(message) // 新消息放在最前面
+  console.log('📨 创建消息:', message)
+  return message
+}
+
 // 生成订单号
 function generateOrderNo(): string {
   const date = new Date()
@@ -246,6 +268,15 @@ export function handleMockRequest(req: any, res: any): boolean {
       console.log('✅ 订单已创建:', order)
       orders.push(order)
 
+      // 创建订单消息
+      createMessage(
+        'order',
+        '订单创建成功',
+        `您的订单 ${orderNo} 已创建成功，请尽快完成支付。航班 ${order.flightNo}，${order.departureCity} → ${order.arrivalCity}`,
+        order.id,
+        1
+      )
+
       res.setHeader('Content-Type', 'application/json')
       res.end(JSON.stringify({
         code: 200,
@@ -334,8 +365,17 @@ export function handleMockRequest(req: any, res: any): boolean {
       return true
     }
 
-    order.status = 1 // 已支付
+    order.status = 2 // 已支付 (修正:应该是2而不是1)
     order.payTime = new Date().toISOString()
+
+    // 创建支付成功消息
+    createMessage(
+      'order',
+      '支付成功',
+      `订单 ${order.orderNo} 支付成功！航班 ${order.flightNo}，${order.departureCity} → ${order.arrivalCity}，祝您旅途愉快！`,
+      order.id,
+      2
+    )
 
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({
@@ -384,6 +424,15 @@ export function handleMockRequest(req: any, res: any): boolean {
     order.cancelTime = new Date().toISOString()
 
     console.log('✅ 订单已取消:', order)
+
+    // 创建取消订单消息
+    createMessage(
+      'order',
+      '订单已取消',
+      `订单 ${order.orderNo} 已成功取消。航班 ${order.flightNo}，${order.departureCity} → ${order.arrivalCity}`,
+      order.id,
+      1
+    )
 
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({
@@ -590,29 +639,78 @@ export function handleMockRequest(req: any, res: any): boolean {
 
   // 消息未读数
   if (pathname === '/api/messages/unread-count') {
+    const unreadCount = messages.filter(m => !m.isRead).length
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({
       code: 200,
       message: 'success',
       success: true,
-      data: 3
+      data: unreadCount
     }))
     return true
   }
 
   // 消息列表
-  if (pathname === '/api/messages') {
+  if (pathname === '/api/messages' && req.method === 'GET') {
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({
       code: 200,
       message: 'success',
       success: true,
       data: {
-        list: [],
-        total: 0,
+        list: messages,
+        total: messages.length,
         page: 1,
         pageSize: 20
       }
+    }))
+    return true
+  }
+
+  // 标记消息已读
+  if (pathname?.startsWith('/api/messages/') && pathname?.endsWith('/read') && req.method === 'PUT') {
+    const messageId = parseInt(pathname.split('/')[3])
+    const message = messages.find(m => m.id === messageId)
+    if (message) {
+      message.isRead = true
+      message.readTime = new Date().toISOString()
+    }
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: 'success',
+      success: true
+    }))
+    return true
+  }
+
+  // 全部标记已读
+  if (pathname === '/api/messages/read-all' && req.method === 'PUT') {
+    messages.forEach(m => {
+      m.isRead = true
+      m.readTime = new Date().toISOString()
+    })
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: 'success',
+      success: true
+    }))
+    return true
+  }
+
+  // 删除消息
+  if (pathname?.startsWith('/api/messages/') && req.method === 'DELETE') {
+    const messageId = parseInt(pathname.split('/')[3])
+    const index = messages.findIndex(m => m.id === messageId)
+    if (index !== -1) {
+      messages.splice(index, 1)
+    }
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      code: 200,
+      message: 'success',
+      success: true
     }))
     return true
   }
