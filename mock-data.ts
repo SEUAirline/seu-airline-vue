@@ -298,6 +298,8 @@ export function handleMockRequest(req: any, res: any): boolean {
       cabinClass: order.cabinClass || 'economy',
       price: order.totalPrice || 0,
       totalAmount: order.totalPrice || 0,
+      totalPrice: order.totalPrice || 0,  // 支付页面需要
+      passengerCount: order.passengerCount || order.passengers?.length || 1,  // 支付页面需要
       passengers: order.passengers || [],
       createTime: order.createTime,
       payTime: order.payTime,

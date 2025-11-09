@@ -631,14 +631,27 @@ const selectFrequentPassenger = (passenger: any) => {
     return
   }
 
-  // 将常用旅客信息添加到乘客列表
-  passengers.value.push({
+  // 检查是否存在空白旅客栏(所有字段都为空)
+  const emptyPassengerIndex = passengers.value.findIndex(p => 
+    !p.name.trim() && !p.idCard.trim() && !p.phone.trim()
+  )
+
+  // 如果存在空白旅客栏,则替换它;否则添加新旅客
+  const newPassenger: Passenger = {
     name: passenger.name,
-    idType: passenger.idType === 'ID_CARD' ? 'idCard' : passenger.idType === 'PASSPORT' ? 'passport' : 'other',
+    idType: (passenger.idType === 'ID_CARD' ? 'idCard' : passenger.idType === 'PASSPORT' ? 'passport' : 'other') as 'idCard' | 'passport' | 'other',
     idCard: passenger.idNumber,
     phone: passenger.phone || '',
-    passengerType: passenger.passengerType || 'adult'
-  })
+    passengerType: (passenger.passengerType || 'adult') as 'adult' | 'child' | 'infant'
+  }
+
+  if (emptyPassengerIndex !== -1) {
+    // 替换空白旅客栏
+    passengers.value[emptyPassengerIndex] = newPassenger
+  } else {
+    // 添加新旅客
+    passengers.value.push(newPassenger)
+  }
 
   showFrequentPassengers.value = false
 }
