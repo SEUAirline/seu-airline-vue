@@ -6,7 +6,8 @@ export interface User {
   email: string
   phone?: string
   idCard?: string
-  realName?: string
+  fullName?: string  // 后端使用 fullName
+  realName?: string  // 兼容旧代码
   role: 'user' | 'admin'
   vipLevel: number
   points: number
@@ -40,7 +41,8 @@ export interface UserProfile {
   email: string
   phone: string
   idCard?: string
-  realName?: string
+  fullName?: string  // 后端使用 fullName
+  realName?: string  // 兼容旧代码
   vipLevel: number
   points: number
   avatar?: string

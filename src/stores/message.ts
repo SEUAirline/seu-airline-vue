@@ -108,13 +108,28 @@ export const useMessageStore = defineStore('message', () => {
    * 获取未读消息数
    */
   const fetchUnreadCount = async () => {
+    // 检查用户是否已登录
+    const token = localStorage.getItem('token')
+    if (!token) {
+      // 未登录时不调用API，避免403错误
+      unreadCount.value = 0
+      return
+    }
+    
     try {
       const response = await messageApi.getUnreadCount()
       if (response.success && response.data !== undefined) {
         unreadCount.value = response.data
       }
-    } catch (error) {
-      console.error('获取未读消息数失败:', error)
+    } catch (error: any) {
+      // 静默处理错误，不在控制台输出
+      // 如果是网络错误或后端未启动，不影响用户体验
+      if (error?.code === 'ECONNREFUSED' || error?.code === 'ERR_NETWORK') {
+        // 后端未启动，静默处理
+      } else {
+        console.debug('获取未读消息数失败:', error?.message || error)
+      }
+      unreadCount.value = 0
     }
   }
   

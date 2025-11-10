@@ -14,6 +14,7 @@ export default defineConfig(({ mode, command }) => {
   console.log('命令:', command)
   console.log('VITE_USE_MOCK:', env.VITE_USE_MOCK)
   console.log('useMock:', useMock)
+  console.log('proxy 配置已启用:', !useMock)
 
   return {
     plugins: [
