@@ -214,8 +214,10 @@ export const mockApi = {
     const flightData = flight.data
     const user = JSON.parse(localStorage.getItem('user') || '{}')
     
+    const orderId = 'ORD' + Date.now()
     const order: Order = {
-      id: 'ORD' + Date.now(),
+      id: orderId,
+      orderNo: orderId,
       userId: user.id,
       flightId: params.flightId,
       flightNo: flightData.flightNo,
@@ -337,10 +339,147 @@ export const mockApi = {
   // 获取所有订单（管理员）
   async getAllOrders(): Promise<ApiResponse<Order[]>> {
     await delay()
-    const orders = MockStorage.getOrders()
+    let orders = MockStorage.getOrders()
+    
+    // 如果没有订单数据，返回示例订单
+    if (orders.length === 0) {
+      orders = [
+        {
+          id: 'ORD20231110001',
+          orderNo: 'ORD20231110001',
+          userId: 1,
+          flightId: 'CA1234',
+          flightNo: 'CA1234',
+          departureCity: '北京',
+          arrivalCity: '上海',
+          departureTime: '08:00',
+          arrivalTime: '10:30',
+          date: '2024-01-15',
+          passengers: [
+            { name: '张三', idCard: '110101199001011234', phone: '13800138000', passengerType: 'adult' }
+          ],
+          cabinClass: 'economy',
+          price: 800,
+          totalAmount: 800,
+          status: 'paid',
+          createTime: '2023-11-10T10:30:00',
+          payTime: '2023-11-10T10:35:00',
+          contactName: '张三',
+          contactPhone: '13800138000',
+          contactEmail: 'zhangsan@example.com'
+        },
+        {
+          id: 'ORD20231110002',
+          orderNo: 'ORD20231110002',
+          userId: 2,
+          flightId: 'MU5678',
+          flightNo: 'MU5678',
+          departureCity: '上海',
+          arrivalCity: '广州',
+          departureTime: '14:00',
+          arrivalTime: '16:30',
+          date: '2024-01-16',
+          passengers: [
+            { name: '李四', idCard: '310101199002021234', phone: '13900139000', passengerType: 'adult' },
+            { name: '王五', idCard: '310101199003031234', phone: '13900139001', passengerType: 'adult' }
+          ],
+          cabinClass: 'business',
+          price: 1500,
+          totalAmount: 3000,
+          status: 'pending',
+          createTime: '2023-11-10T11:00:00',
+          contactName: '李四',
+          contactPhone: '13900139000',
+          contactEmail: 'lisi@example.com'
+        },
+        {
+          id: 'ORD20231110003',
+          orderNo: 'ORD20231110003',
+          userId: 3,
+          flightId: 'CZ9012',
+          flightNo: 'CZ9012',
+          departureCity: '广州',
+          arrivalCity: '深圳',
+          departureTime: '09:00',
+          arrivalTime: '10:00',
+          date: '2024-01-17',
+          passengers: [
+            { name: '赵六', idCard: '440101199004041234', phone: '13700137000', passengerType: 'adult' }
+          ],
+          cabinClass: 'economy',
+          price: 500,
+          totalAmount: 500,
+          status: 'completed',
+          createTime: '2023-11-10T09:00:00',
+          payTime: '2023-11-10T09:05:00',
+          contactName: '赵六',
+          contactPhone: '13700137000',
+          contactEmail: 'zhaoliu@example.com'
+        },
+        {
+          id: 'ORD20231109001',
+          orderNo: 'ORD20231109001',
+          userId: 4,
+          flightId: 'HU3456',
+          flightNo: 'HU3456',
+          departureCity: '成都',
+          arrivalCity: '北京',
+          departureTime: '15:00',
+          arrivalTime: '18:00',
+          date: '2024-01-18',
+          passengers: [
+            { name: '孙七', idCard: 'E12345678', phone: '13600136000', passengerType: 'adult' }
+          ],
+          cabinClass: 'first',
+          price: 2500,
+          totalAmount: 2500,
+          status: 'cancelled',
+          createTime: '2023-11-09T14:00:00',
+          contactName: '孙七',
+          contactPhone: '13600136000',
+          contactEmail: 'sunqi@example.com'
+        },
+        {
+          id: 'ORD20231109002',
+          orderNo: 'ORD20231109002',
+          userId: 5,
+          flightId: 'CA1234',
+          flightNo: 'CA1234',
+          departureCity: '北京',
+          arrivalCity: '上海',
+          departureTime: '08:00',
+          arrivalTime: '10:30',
+          date: '2024-01-20',
+          passengers: [
+            { name: '周八', idCard: '110101199005051234', phone: '13500135000', passengerType: 'adult' },
+            { name: '吴九', idCard: '110101201006061234', phone: '13500135001', passengerType: 'child' }
+          ],
+          cabinClass: 'economy',
+          price: 800,
+          totalAmount: 1200,
+          status: 'paid',
+          createTime: '2023-11-09T16:00:00',
+          payTime: '2023-11-09T16:10:00',
+          contactName: '周八',
+          contactPhone: '13500135000',
+          contactEmail: 'zhouba@example.com'
+        }
+      ]
+    }
+    
     return {
       success: true,
       data: orders
+    }
+  },
+
+  // 获取所有航班（管理员）
+  async getAllFlights(): Promise<ApiResponse<Flight[]>> {
+    await delay()
+    const flights = await MockStorage.loadFlights()
+    return {
+      success: true,
+      data: flights
     }
   }
 }

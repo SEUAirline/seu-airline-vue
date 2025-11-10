@@ -328,14 +328,8 @@ const visiblePages = computed(() => {
 // 加载航班数据
 async function loadFlights() {
   try {
-    const response = await mockApi.searchFlights({
-      tripType: 'oneWay',
-      departureCity: '',
-      arrivalCity: '',
-      departureDate: '',
-      passengers: 1,
-      cabinClass: 'economy'
-    })
+    // 管理端需要加载所有航班，直接调用 getAllFlights
+    const response = await mockApi.getAllFlights()
     if (response.success && response.data) {
       flights.value = response.data
     }

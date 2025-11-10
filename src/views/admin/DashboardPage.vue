@@ -263,34 +263,190 @@ async function loadRecentOrders() {
   }
 }
 
+// Chart.js 实例
+let salesChart: any = null
+let routesChart: any = null
+
 // 初始化图表
-function initCharts() {
-  // 注意：需要安装 chart.js
-  // 这里先用简单的提示，实际使用时需要导入Chart.js
-  if (salesChartRef.value && routesChartRef.value) {
-    // TODO: 集成 Chart.js
-    // 绘制销售趋势图
-    const salesCtx = salesChartRef.value.getContext('2d')
-    if (salesCtx) {
-      salesCtx.fillStyle = '#E5E7EB'
-      salesCtx.fillRect(0, 0, salesChartRef.value.width, salesChartRef.value.height)
-      salesCtx.fillStyle = '#6B7280'
-      salesCtx.font = '14px sans-serif'
-      salesCtx.textAlign = 'center'
-      salesCtx.fillText('图表功能需要安装 Chart.js', salesChartRef.value.width / 2, salesChartRef.value.height / 2)
-      salesCtx.fillText('npm install chart.js vue-chartjs', salesChartRef.value.width / 2, salesChartRef.value.height / 2 + 20)
+async function initCharts() {
+  try {
+    // 动态导入 Chart.js
+    const { Chart, registerables } = await import('chart.js')
+    Chart.register(...registerables)
+
+    // 销售趋势图表
+    if (salesChartRef.value) {
+      // 销毁旧图表
+      if (salesChart) {
+        salesChart.destroy()
+      }
+
+      // 生成销售数据
+      const days = parseInt(salesPeriod.value)
+      const labels = []
+      const data = []
+      const today = new Date()
+      
+      for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(today)
+        date.setDate(date.getDate() - i)
+        labels.push(`${date.getMonth() + 1}/${date.getDate()}`)
+        // 模拟数据：基础值 + 随机波动
+        data.push(Math.floor(5000 + Math.random() * 3000 + (days - i) * 100))
+      }
+
+      salesChart = new Chart(salesChartRef.value, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: '销售额（¥）',
+            data,
+            borderColor: 'rgb(30, 58, 138)',
+            backgroundColor: 'rgba(30, 58, 138, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context: any) {
+                  return '销售额: ¥' + (context.parsed.y || 0).toLocaleString()
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '¥' + value.toLocaleString()
+                }
+              }
+            }
+          }
+        }
+      })
     }
 
-    // 绘制航线分布图
-    const routesCtx = routesChartRef.value.getContext('2d')
-    if (routesCtx) {
-      routesCtx.fillStyle = '#E5E7EB'
-      routesCtx.fillRect(0, 0, routesChartRef.value.width, routesChartRef.value.height)
-      routesCtx.fillStyle = '#6B7280'
-      routesCtx.font = '14px sans-serif'
-      routesCtx.textAlign = 'center'
-      routesCtx.fillText('图表功能需要安装 Chart.js', routesChartRef.value.width / 2, routesChartRef.value.height / 2)
-      routesCtx.fillText('npm install chart.js vue-chartjs', routesChartRef.value.width / 2, routesChartRef.value.height / 2 + 20)
+    // 热门航线图表
+    if (routesChartRef.value) {
+      // 销毁旧图表
+      if (routesChart) {
+        routesChart.destroy()
+      }
+
+      // 热门航线数据
+      const routeData = {
+        week: {
+          labels: ['北京-上海', '上海-广州', '广州-深圳', '成都-北京', '杭州-北京'],
+          data: [450, 380, 320, 280, 250]
+        },
+        month: {
+          labels: ['北京-上海', '上海-广州', '广州-深圳', '成都-北京', '杭州-北京', '西安-上海'],
+          data: [1850, 1620, 1380, 1150, 980, 850]
+        },
+        quarter: {
+          labels: ['北京-上海', '上海-广州', '广州-深圳', '成都-北京', '杭州-北京', '西安-上海', '南京-深圳'],
+          data: [5500, 4800, 4200, 3600, 3100, 2800, 2400]
+        }
+      }
+
+      const currentData = routeData[routesPeriod.value as keyof typeof routeData]
+
+      routesChart = new Chart(routesChartRef.value, {
+        type: 'bar',
+        data: {
+          labels: currentData.labels,
+          datasets: [{
+            label: '订单数量',
+            data: currentData.data,
+            backgroundColor: [
+              'rgba(30, 58, 138, 0.8)',
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(147, 197, 253, 0.8)',
+              'rgba(96, 165, 250, 0.8)',
+              'rgba(37, 99, 235, 0.8)',
+              'rgba(29, 78, 216, 0.8)',
+              'rgba(30, 64, 175, 0.8)'
+            ],
+            borderColor: [
+              'rgb(30, 58, 138)',
+              'rgb(59, 130, 246)',
+              'rgb(147, 197, 253)',
+              'rgb(96, 165, 250)',
+              'rgb(37, 99, 235)',
+              'rgb(29, 78, 216)',
+              'rgb(30, 64, 175)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return '订单数: ' + context.parsed.y + ' 单'
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value + ' 单'
+                }
+              }
+            }
+          }
+        }
+      })
+    }
+  } catch (error) {
+    console.error('初始化图表失败:', error)
+    // 如果 Chart.js 未安装，显示提示信息
+    if (salesChartRef.value) {
+      const salesCtx = salesChartRef.value.getContext('2d')
+      if (salesCtx) {
+        salesCtx.fillStyle = '#E5E7EB'
+        salesCtx.fillRect(0, 0, salesChartRef.value.width, salesChartRef.value.height)
+        salesCtx.fillStyle = '#6B7280'
+        salesCtx.font = '14px sans-serif'
+        salesCtx.textAlign = 'center'
+        salesCtx.fillText('图表功能需要安装 Chart.js', salesChartRef.value.width / 2, salesChartRef.value.height / 2)
+        salesCtx.fillText('npm install chart.js', salesChartRef.value.width / 2, salesChartRef.value.height / 2 + 20)
+      }
+    }
+    if (routesChartRef.value) {
+      const routesCtx = routesChartRef.value.getContext('2d')
+      if (routesCtx) {
+        routesCtx.fillStyle = '#E5E7EB'
+        routesCtx.fillRect(0, 0, routesChartRef.value.width, routesChartRef.value.height)
+        routesCtx.fillStyle = '#6B7280'
+        routesCtx.font = '14px sans-serif'
+        routesCtx.textAlign = 'center'
+        routesCtx.fillText('图表功能需要安装 Chart.js', routesChartRef.value.width / 2, routesChartRef.value.height / 2)
+        routesCtx.fillText('npm install chart.js', routesChartRef.value.width / 2, routesChartRef.value.height / 2 + 20)
+      }
     }
   }
 }

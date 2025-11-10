@@ -12,6 +12,9 @@ export interface User {
   points: number
   avatar?: string
   createdAt?: string
+  createTime?: string
+  lastLoginTime?: string
+  status?: 'active' | 'disabled' | 'pending'
 }
 
 export interface LoginForm {
