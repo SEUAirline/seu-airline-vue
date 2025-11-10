@@ -9,6 +9,7 @@ export interface Passenger {
 
 export interface Order {
   id: string
+  orderNo: string  // 订单号
   userId: number | string
   flightId: string
   flightNo: string

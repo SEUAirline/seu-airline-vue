@@ -18,11 +18,12 @@ const airports = [
 // 航空公司
 const airlines = ['中国国际航空', '中国东方航空', '中国南方航空', '海南航空', '厦门航空']
 
-// 用户数据
+// 用户数据 - 添加密码字段用于登录验证
 const users: any = {
   '1': {
     id: 1,
     username: 'user123',
+    password: '123456', // 测试密码
     nickname: '张三',
     email: 'zhangsan@example.com',
     phone: '13800138000',
@@ -30,11 +31,17 @@ const users: any = {
     gender: 'male',
     birthday: '1990-01-01',
     idCard: '320123199001011234',
+    realName: '张三',
     createTime: '2024-01-01 10:00:00',
     points: 1580,
-    level: 'gold'
+    vipLevel: 2,
+    level: 'gold',
+    role: 'user'
   }
 }
+
+// 用户数据数组（用于查找）
+const userList = Object.values(users)
 
 // 常用旅客数据
 const passengers: any[] = [
@@ -141,6 +148,143 @@ export function handleMockRequest(req: any, res: any): boolean {
   const query = parsedUrl.query
 
   console.log('📡 拦截请求:', pathname, query)
+
+  // 用户登录
+  if (pathname === '/api/auth/login' && req.method === 'POST') {
+    let body = ''
+    req.on('data', (chunk: any) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => {
+      try {
+        const { username, password } = JSON.parse(body)
+        console.log('🔐 登录请求:', { username, password })
+        
+        // 查找用户
+        const user: any = userList.find((u: any) => u.username === username && u.password === password)
+        
+        if (!user) {
+          console.log('❌ 登录失败: 用户名或密码错误')
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            code: 401,
+            message: '用户名或密码错误',
+            success: false,
+            data: null
+          }))
+          return
+        }
+        
+        // 生成token
+        const token = `mock_token_${Date.now()}_${user.id}`
+        
+        // 返回用户信息（不包含密码）
+        const { password: _pwd, ...userWithoutPassword } = user
+        
+        console.log('✅ 登录成功:', userWithoutPassword)
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({
+          code: 200,
+          message: '登录成功',
+          success: true,
+          data: {
+            token,
+            user: userWithoutPassword
+          }
+        }))
+      } catch (error) {
+        console.error('❌ 登录处理错误:', error)
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({
+          code: 500,
+          message: '服务器错误',
+          success: false,
+          data: null
+        }))
+      }
+    })
+    return true
+  }
+
+  // 用户注册
+  if (pathname === '/api/auth/register' && req.method === 'POST') {
+    let body = ''
+    req.on('data', (chunk: any) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => {
+      try {
+        const { username, password, email, phone, idCard, fullName } = JSON.parse(body)
+        console.log('📝 注册请求:', { username, email, phone })
+        
+        // 检查用户名是否已存在
+        const existingUser = userList.find((u: any) => u.username === username)
+        if (existingUser) {
+          console.log('❌ 注册失败: 用户名已存在')
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            code: 400,
+            message: '用户名已存在',
+            success: false,
+            data: null
+          }))
+          return
+        }
+        
+        // 创建新用户
+        const newUserId = Object.keys(users).length + 1
+        const newUser = {
+          id: newUserId,
+          username,
+          password,
+          email,
+          phone,
+          idCard: idCard || '',
+          realName: fullName || '',
+          nickname: fullName || username,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+          gender: 'unknown',
+          birthday: '',
+          createTime: new Date().toISOString(),
+          points: 0,
+          vipLevel: 1,
+          level: 'bronze',
+          role: 'user'
+        }
+        
+        users[newUserId] = newUser
+        userList.push(newUser)
+        
+        // 生成token
+        const token = `mock_token_${Date.now()}_${newUser.id}`
+        
+        // 返回用户信息（不包含密码）
+        const { password: _pwd2, ...userWithoutPassword } = newUser
+        
+        console.log('✅ 注册成功:', userWithoutPassword)
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({
+          code: 200,
+          message: '注册成功',
+          success: true,
+          data: {
+            token,
+            user: userWithoutPassword
+          }
+        }))
+      } catch (error) {
+        console.error('❌ 注册处理错误:', error)
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({
+          code: 500,
+          message: '服务器错误',
+          success: false,
+          data: null
+        }))
+      }
+    })
+    return true
+  }
 
   // 机场列表
   if (pathname === '/api/airport/list') {
