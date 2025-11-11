@@ -32,15 +32,29 @@ client.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      const { status } = error.response
+      const { status, data } = error.response
       switch (status) {
         case 401:
-          // 未授权，清除token并跳转登录
+          // Token 过期或未授权
+          const tokenExpired = data?.tokenExpired || false
+          
+          // 清除所有认证信息
           localStorage.removeItem('token')
           localStorage.removeItem('user')
           localStorage.removeItem('adminToken')
           localStorage.removeItem('currentAdmin')
-          window.location.href = '/login'
+          
+          // 如果是 token 过期，显示友好提示
+          if (tokenExpired) {
+            // 使用自定义事件通知应用 token 已过期
+            window.dispatchEvent(new CustomEvent('token-expired', {
+              detail: { message: '登录已过期，请重新登录' }
+            }))
+          } else {
+            // 非 token 过期的 401 错误，跳转登录页
+            console.error('未授权访问')
+            window.location.href = '/login'
+          }
           break
         case 403:
           console.error('没有权限访问')
