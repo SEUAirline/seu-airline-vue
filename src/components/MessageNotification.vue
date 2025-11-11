@@ -336,6 +336,12 @@ const formatTime = (timeStr: string): string => {
  * 启动轮询
  */
 const startPolling = () => {
+  // 检查用户是否已登录
+  const token = localStorage.getItem('token')
+  if (!token) {
+    return // 未登录时不启动轮询
+  }
+  
   // 立即获取一次未读数
   messageStore.fetchUnreadCount()
   

@@ -482,12 +482,20 @@ const loadOrderStats = async () => {
 // 加载未读消息数
 const loadUnreadCount = async () => {
   try {
+    // 检查是否已登录
+    const token = localStorage.getItem('token')
+    if (!token) {
+      unreadCount.value = 0
+      return
+    }
+    
     const response = await request.get('/messages/unread-count')
     if (response.success) {
       unreadCount.value = response.data || 0
     }
   } catch (error) {
     console.error('加载未读消息数失败:', error)
+    unreadCount.value = 0
   }
 }
 
