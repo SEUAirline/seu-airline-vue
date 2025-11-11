@@ -202,7 +202,7 @@ function handleSearch() {
     !searchForm.value.arrivalCity ||
     !searchForm.value.departureDate
   ) {
-    alert('请填写完整的搜索信息')
+    // 表单验证失败，静默处理（表单本身已有红框提示）
     return
   }
 

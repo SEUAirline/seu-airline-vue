@@ -627,7 +627,7 @@ const loadFrequentPassengers = async () => {
 // 选择常用旅客
 const selectFrequentPassenger = (passenger: any) => {
   if (passengers.value.length >= maxPassengers) {
-    alert('已达到最大乘客数量')
+    // 已达上限，静默阻止添加（按钮应该已禁用）
     return
   }
 
@@ -831,12 +831,11 @@ const handleSubmit = async () => {
         name: 'Payment',
         params: { orderId: result.data.id }
       })
-    } else {
-      alert(result.message || '创建订单失败')
     }
+    // 创建订单失败，静默处理
   } catch (error) {
     console.error('创建订单失败:', error)
-    alert('创建订单失败，请稍后重试')
+    // 静默处理错误
   } finally {
     submitting.value = false
   }

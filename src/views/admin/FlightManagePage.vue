@@ -379,10 +379,8 @@ function handleViewFlight(flight: Flight) {
 function handleDeleteFlight(flight: Flight) {
   if (flight.status === 'cancelled') return
   
-  if (confirm(`确定要删除航班 ${flight.flightNo} 吗？`)) {
-    flights.value = flights.value.filter(f => f.id !== flight.id)
-    // TODO: 调用 API 删除
-  }
+  flights.value = flights.value.filter(f => f.id !== flight.id)
+  // TODO: 调用 API 删除
 }
 
 // 保存航班

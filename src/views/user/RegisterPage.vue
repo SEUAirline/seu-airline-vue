@@ -124,7 +124,7 @@ const registerForm = ref({
 
 async function handleRegister() {
   if (registerForm.value.password !== registerForm.value.confirmPassword) {
-    alert('两次密码输入不一致')
+    console.error('两次密码输入不一致')
     return
   }
 
@@ -132,10 +132,9 @@ async function handleRegister() {
   try {
     const result = await userStore.register(registerForm.value)
     if (result.success) {
-      alert('注册成功!')
       router.push('/')
     } else {
-      alert(result.message || '注册失败')
+      console.error('注册失败:', result.message)
     }
   } finally {
     loading.value = false

@@ -347,27 +347,22 @@ function handleViewOrder(order: Order) {
 
 // 查看客票
 function handleViewTicket(order: Order) {
-  alert(`查看客票：${order.orderNo}\n此功能待实现`)
+  console.log(`查看客票：${order.orderNo} - 功能待实现`)
 }
 
 // 提醒支付
 function handleRemindPayment(order: Order) {
-  if (confirm(`确定要提醒客户 ${order.contactName} 支付订单 ${order.orderNo} 吗？`)) {
-    alert('支付提醒已发送！')
-  }
+  console.log(`支付提醒已发送给客户 ${order.contactName}`)
 }
 
 // 取消订单
 function handleCancelOrder(order: Order) {
-  if (confirm(`确定要取消订单 ${order.orderNo} 吗？\n此操作不可撤销！`)) {
-    order.status = 'cancelled'
-    alert('订单已取消')
-  }
+  order.status = 'cancelled'
 }
 
 // 联系客户
 function handleContactCustomer(order: Order) {
-  alert(`联系客户：${order.contactName}\n电话：${order.contactPhone}\n邮箱：${order.contactEmail}`)
+  console.log(`联系客户：${order.contactName}`, { phone: order.contactPhone, email: order.contactEmail })
 }
 
 // 格式化电话号码

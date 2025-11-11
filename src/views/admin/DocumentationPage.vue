@@ -173,7 +173,7 @@ const docCategories = ref([
 
 function handleSearch() {
   if (searchQuery.value) {
-    alert(`搜索: ${searchQuery.value}`)
+    console.log(`搜索: ${searchQuery.value}`)
   }
 }
 
@@ -188,11 +188,11 @@ function toggleTree(id: string) {
 
 function handleDocClick(title: string) {
   selectedDoc.value = title
-  alert(`查看文档: ${title}`)
+  console.log(`查看文档: ${title}`)
 }
 
 function handleCategoryClick(cat: any) {
-  alert(`浏览 ${cat.title} 分类`)
+  console.log(`浏览 ${cat.title} 分类`)
 }
 </script>
 

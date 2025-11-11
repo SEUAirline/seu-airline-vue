@@ -80,11 +80,10 @@ function getRoleText(role: string) {
   return roles[role as keyof typeof roles]
 }
 
-function handleAddAdmin() { alert('添加管理员功能待实现') }
-function handleEdit(admin: any) { alert(`编辑管理员: ${admin.username}`) }
+function handleAddAdmin() { console.log('添加管理员功能待实现') }
+function handleEdit(admin: any) { console.log(`编辑管理员: ${admin.username}`) }
 function handleToggleStatus(admin: any) {
   admin.status = admin.status === 'active' ? 'disabled' : 'active'
-  alert(`管理员${admin.username}已${admin.status === 'active' ? '启用' : '禁用'}`)
 }
 </script>
 

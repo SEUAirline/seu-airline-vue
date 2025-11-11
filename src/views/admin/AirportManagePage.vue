@@ -121,11 +121,10 @@ const filteredAirports = computed(() => {
 
 function handleSearch() {}
 function handleReset() { searchForm.value = { name: '', code: '', city: '' } }
-function handleAdd() { alert('添加机场功能待实现') }
-function handleEdit(airport: Airport) { alert(`编辑机场: ${airport.name}`) }
+function handleAdd() { console.log('添加机场功能待实现') }
+function handleEdit(airport: Airport) { console.log(`编辑机场: ${airport.name}`) }
 function handleToggleStatus(airport: Airport) {
   airport.status = airport.status === 'active' ? 'disabled' : 'active'
-  alert(`机场${airport.name}已${airport.status === 'active' ? '启用' : '禁用'}`)
 }
 </script>
 

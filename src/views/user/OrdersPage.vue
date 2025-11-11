@@ -360,13 +360,12 @@ async function confirmCancelOrder() {
         order.status = 'cancelled'
       }
       showCancelModal.value = false
-      alert('订单已取消')
-    } else {
-      alert(response.message || '取消订单失败')
+      // 取消成功，不需要提示
     }
+    // 失败静默处理
   } catch (error) {
     console.error('取消订单失败:', error)
-    alert('取消订单失败，请稍后重试')
+    // 静默处理错误
   } finally {
     cancelling.value = false
     orderToCancel.value = null
@@ -377,7 +376,7 @@ async function confirmCancelOrder() {
 function handleCheckIn(orderId: string) {
   // TODO: 实现在线值机功能
   console.log('在线值机订单ID:', orderId)
-  alert('在线值机功能开发中...')
+  // 功能开发中，静默处理
 }
 
 // 再次预订

@@ -332,28 +332,22 @@ function handleResetSearch() {
 
 // 查看用户详情
 function handleViewUser(user: User) {
-  alert(`用户详情：${user.username}\nID: ${user.id}\n姓名: ${user.realName}\n手机: ${user.phone}\n邮箱: ${user.email}`)
+  console.log(`用户详情：${user.username}`, user)
 }
 
 // 禁用用户
 function handleDisableUser(user: User) {
-  if (confirm(`确定要禁用用户 ${user.username} 吗？`)) {
-    user.status = 'disabled'
-    alert('用户已禁用')
-  }
+  user.status = 'disabled'
 }
 
 // 启用用户
 function handleEnableUser(user: User) {
-  if (confirm(`确定要启用用户 ${user.username} 吗？`)) {
-    user.status = 'active'
-    alert('用户已启用')
-  }
+  user.status = 'active'
 }
 
 // 查看用户订单
 function handleViewOrders(user: User) {
-  alert(`查看用户 ${user.username} 的订单\n此功能待实现`)
+  console.log(`查看用户 ${user.username} 的订单 - 功能待实现`)
 }
 
 // 格式化电话号码

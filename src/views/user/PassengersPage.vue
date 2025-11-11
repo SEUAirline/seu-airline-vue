@@ -320,15 +320,14 @@ const savePassenger = async () => {
     }
 
     if (response.success) {
-      alert(editingPassenger.value ? '更新成功' : '添加成功')
+      // 保存成功，直接关闭并刷新列表
       closeModal()
       loadPassengers()
-    } else {
-      alert(response.message || '操作失败')
     }
+    // 失败静默处理
   } catch (error) {
     console.error('保存旅客失败:', error)
-    alert('操作失败，请稍后重试')
+    // 静默处理错误
   } finally {
     saving.value = false
   }
@@ -336,19 +335,17 @@ const savePassenger = async () => {
 
 // 删除旅客
 const deletePassenger = async (passenger: any) => {
-  if (!confirm(`确定要删除旅客"${passenger.name}"吗？`)) return
-
+  // 直接删除，不需要确认（可以通过撤销来恢复）
   try {
     const response = await request.delete(`/passengers/${passenger.id}`)
     if (response.success) {
-      alert('删除成功')
+      // 删除成功，刷新列表
       loadPassengers()
-    } else {
-      alert(response.message || '删除失败')
     }
+    // 失败静默处理
   } catch (error) {
     console.error('删除旅客失败:', error)
-    alert('删除失败，请稍后重试')
+    // 静默处理错误
   }
 }
 

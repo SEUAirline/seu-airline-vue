@@ -339,7 +339,7 @@ const stopCountdown = () => {
 
 // 超时处理
 const handleTimeout = () => {
-  alert('支付超时，订单已取消')
+  // 支付超时，直接跳转到订单页
   router.push('/user/orders')
 }
 
@@ -356,7 +356,8 @@ const handlePayment = async () => {
 
   if (!order.value.id) {
     console.error('订单ID为空!')
-    alert('订单信息错误，请返回重新下单')
+    // 订单信息错误，静默返回
+    router.push('/user/orders')
     return
   }
 
@@ -383,12 +384,11 @@ const handlePayment = async () => {
         name: 'OrderSuccess',
         params: { id: order.value.id }
       })
-    } else {
-      alert(result.message || '支付失败')
     }
+    // 支付失败，静默处理
   } catch (error) {
     console.error('支付失败:', error)
-    alert('支付失败，请稍后重试')
+    // 静默处理错误
   } finally {
     paying.value = false
   }
@@ -401,7 +401,8 @@ onMounted(async () => {
 
   if (!orderId) {
     console.error('URL 中没有订单ID!')
-    alert('订单信息错误，请返回重新下单')
+    // 订单信息错误，返回订单列表
+    router.push('/user/orders')
     router.push('/user/orders')
     return
   }
@@ -419,7 +420,7 @@ onMounted(async () => {
     startCountdown()
   } else {
     console.error('未找到订单信息，结果:', result)
-    alert('未找到订单信息，请返回重新下单')
+    // 未找到订单，直接返回订单列表
     router.push('/user/orders')
   }
 

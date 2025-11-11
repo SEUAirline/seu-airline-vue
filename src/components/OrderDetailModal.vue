@@ -375,7 +375,7 @@ function handleCancel() {
 // 下载电子票
 function handleDownloadTicket() {
   // TODO: 实现电子票下载功能
-  alert('电子票下载功能开发中...')
+  console.log('电子票下载功能开发中')
 }
 
 // 工具函数

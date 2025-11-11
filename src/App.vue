@@ -2,24 +2,19 @@
   <div id="app" class="min-h-screen bg-gray-50">
     <RouterView />
     
-    <!-- Token 过期弹窗 -->
+    <!-- Token 过期提示（自动消失，无需确认） -->
     <div v-if="showTokenExpiredModal" 
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-         @click="closeTokenExpiredModal">
-      <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl" 
-           @click.stop>
-        <div class="flex items-center mb-4">
-          <svg class="w-6 h-6 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <h3 class="text-lg font-semibold text-gray-900">登录已过期</h3>
+         class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300"
+         :class="showTokenExpiredModal ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'">
+      <div class="bg-white rounded-lg px-6 py-4 shadow-xl border-l-4 border-yellow-500 flex items-center space-x-3">
+        <svg class="w-6 h-6 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <div>
+          <p class="text-gray-900 font-medium">登录已过期</p>
+          <p class="text-sm text-gray-600">您的登录状态已过期，请重新登录</p>
         </div>
-        <p class="text-gray-600 mb-6">您的登录状态已过期，请重新登录以继续使用。</p>
-        <button @click="closeTokenExpiredModal"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-          我知道了
-        </button>
       </div>
     </div>
   </div>
@@ -38,16 +33,16 @@ const handleTokenExpired = (event: Event) => {
   const customEvent = event as CustomEvent
   console.log('Token 过期:', customEvent.detail?.message)
   
-  // 显示过期提示弹窗
+  // 显示过期提示（3秒后自动消失，无需点击，不跳转）
   showTokenExpiredModal.value = true
   
   // 清除用户状态
   userStore.logout()
-}
-
-// 关闭弹窗
-const closeTokenExpiredModal = () => {
-  showTokenExpiredModal.value = false
+  
+  // 3秒后自动关闭提示，不做任何跳转
+  setTimeout(() => {
+    showTokenExpiredModal.value = false
+  }, 3000)
 }
 
 // 组件挂载时添加事件监听

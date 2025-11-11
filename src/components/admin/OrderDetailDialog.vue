@@ -194,25 +194,22 @@ function handleClose() {
 
 // 提醒支付
 function handleRemindPayment() {
-  if (props.order && confirm(`确定要提醒客户 ${props.order.contactName} 支付订单吗？`)) {
-    alert('支付提醒已发送！')
+  if (props.order) {
+    console.log(`支付提醒已发送给客户 ${props.order.contactName}`)
   }
 }
 
 // 查看客票
 function handleViewTicket() {
   if (props.order) {
-    alert(`查看客票：${props.order.orderNo}\n此功能待实现`)
+    console.log(`查看客票：${props.order.orderNo} - 功能待实现`)
   }
 }
 
 // 取消订单
 function handleCancelOrder() {
-  if (props.order && confirm(`确定要取消订单 ${props.order.orderNo} 吗？\n此操作不可撤销！`)) {
-    if (props.order) {
-      props.order.status = 'cancelled'
-    }
-    alert('订单已取消')
+  if (props.order) {
+    props.order.status = 'cancelled'
     handleClose()
   }
 }

@@ -257,15 +257,11 @@ const loadUserInfo = async () => {
 const saveProfile = async () => {
   saving.value = true
   try {
-    const response = await request.put('/user/profile', profileForm.value)
-    if (response.success) {
-      alert('保存成功')
-    } else {
-      alert(response.message || '保存失败')
-    }
+    await request.put('/user/profile', profileForm.value)
+    // 保存成功或失败都静默处理
   } catch (error) {
     console.error('保存失败:', error)
-    alert('保存失败，请稍后重试')
+    // 静默处理错误
   } finally {
     saving.value = false
   }
@@ -273,21 +269,17 @@ const saveProfile = async () => {
 
 // 修改密码
 const changePassword = async () => {
-  // 验证
+  // 验证（静默失败，表单本身有提示）
   if (!passwordForm.value.oldPassword) {
-    alert('请输入当前密码')
     return
   }
   if (!passwordForm.value.newPassword) {
-    alert('请输入新密码')
     return
   }
   if (passwordForm.value.newPassword.length < 6 || passwordForm.value.newPassword.length > 20) {
-    alert('密码长度应为6-20位')
     return
   }
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    alert('两次输入的密码不一致')
     return
   }
 
@@ -298,14 +290,13 @@ const changePassword = async () => {
       newPassword: passwordForm.value.newPassword
     })
     if (response.success) {
-      alert('密码修改成功，请重新登录')
+      // 密码修改成功，清空表单
       resetPasswordForm()
-    } else {
-      alert(response.message || '修改失败')
     }
+    // 失败静默处理
   } catch (error) {
     console.error('修改密码失败:', error)
-    alert('修改失败，请稍后重试')
+    // 静默处理错误
   } finally {
     saving.value = false
   }

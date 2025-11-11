@@ -105,7 +105,7 @@ function getTypeText(type: string) {
 }
 
 function handleSearch() {}
-function handleExport() { alert('导出功能待实现') }
+function handleExport() { console.log('导出功能待实现') }
 </script>
 
 <style scoped>

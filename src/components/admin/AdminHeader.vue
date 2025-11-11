@@ -72,9 +72,7 @@ const notificationCount = ref(3)
 const adminInfo = computed(() => adminStore.adminInfo)
 
 function handleLogout() {
-  if (confirm('确定要退出登录吗？')) {
-    adminStore.logout()
-    router.push('/admin/login')
-  }
+  adminStore.logout()
+  router.push('/admin/login')
 }
 </script>

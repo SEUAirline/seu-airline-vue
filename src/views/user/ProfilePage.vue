@@ -448,14 +448,13 @@ const handleSaveProfile = async () => {
   try {
     const response = await request.put('/user/profile', profileForm.value)
     if (response.success) {
-      alert('个人信息更新成功！')
+      // 更新成功，重新加载信息
       await loadUserInfo()
-    } else {
-      alert(response.message || '更新失败')
     }
+    // 失败静默处理
   } catch (error) {
     console.error('保存个人信息失败:', error)
-    alert('保存失败，请稍后重试')
+    // 静默处理错误
   }
 }
 
