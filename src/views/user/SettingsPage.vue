@@ -260,11 +260,15 @@ const loadUserInfo = async () => {
 const saveProfile = async () => {
   saving.value = true
   try {
-    await request.put('/user/profile', profileForm.value)
-    // 更新 store 中的用户信息
-    userStore.updateUser(profileForm.value)
-    console.log('个人信息保存成功')
-    // 保存成功或失败都静默处理
+    const response = await request.put('/user/profile', profileForm.value)
+    // 使用后端返回的完整用户信息更新 store
+    if (response.data && response.data.data) {
+      userStore.updateUser(response.data.data)
+      console.log('个人信息保存成功，已更新 store')
+    } else if (response.data) {
+      userStore.updateUser(response.data)
+      console.log('个人信息保存成功，已更新 store')
+    }
   } catch (error) {
     console.error('保存失败:', error)
     // 静默处理错误
