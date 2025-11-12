@@ -33,7 +33,7 @@
       </div>
 
       <!-- 支付页面 -->
-      <div v-else class="max-w-4xl mx-auto">
+      <div v-else class="max-w-6xl mx-auto">
         <!-- 步骤指示器 -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
           <div class="flex items-center justify-between">
@@ -70,9 +70,9 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <!-- 左侧：支付方式 -->
-          <div class="lg:col-span-2 space-y-6">
+          <div class="lg:col-span-3 space-y-6">
             <!-- 倒计时提示 -->
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div class="flex items-center">
@@ -242,14 +242,14 @@
           </div>
 
           <!-- 右侧：订单信息 -->
-          <div class="lg:col-span-1">
+          <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
               <h2 class="text-xl font-semibold text-gray-900 mb-4">订单信息</h2>
 
               <div class="space-y-3 border-b border-gray-200 pb-4 mb-4">
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">订单号</span>
-                  <span class="font-medium text-gray-900">{{ order.orderNumber }}</span>
+                  <span class="text-gray-600 flex-shrink-0">订单号</span>
+                  <span class="font-medium text-gray-900 text-right break-all ml-2">{{ order.orderNumber }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-600">航班号</span>
