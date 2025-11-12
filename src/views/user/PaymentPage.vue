@@ -394,6 +394,9 @@ const handlePayment = async () => {
 
 // 初始化
 onMounted(async () => {
+  // 确保页面可以正常滚动（修复从弹窗跳转过来时滚动被禁用的问题）
+  document.body.style.overflow = ''
+  
   const orderId = route.params.orderId as string
   console.log('支付页面加载，订单ID:', orderId)
 

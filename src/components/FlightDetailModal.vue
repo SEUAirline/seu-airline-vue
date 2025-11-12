@@ -13,7 +13,7 @@
           <!-- 关闭按钮 -->
           <button
             @click="handleClose"
-            class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            class="absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors border border-gray-200"
             aria-label="关闭"
           >
             <svg
@@ -32,14 +32,14 @@
           </button>
 
           <!-- 头部 -->
-          <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ flight.flightNo }}</h2>
-                <p class="mt-1 text-sm text-gray-600">{{ flight.airline }}</p>
+          <div class="p-6 pr-16 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold text-gray-900 truncate">{{ flight.flightNo }}</h2>
+                <p class="mt-1 text-sm text-gray-600 truncate">{{ flight.airline }}</p>
               </div>
-              <div class="flex items-center gap-2">
-                <span :class="['px-4 py-2 rounded-full text-sm font-medium', statusClass]">
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap', statusClass]">
                   {{ statusText }}
                 </span>
               </div>
@@ -290,7 +290,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, watch, onUnmounted } from 'vue'
 import type { Flight } from '@/types/flight'
 
 // Props
@@ -347,13 +347,60 @@ const hasAvailableSeats = computed(() => {
 
 // 方法
 const formatTime = (time: string) => {
-  return time.substring(0, 5) // "HH:mm"
+  if (!time) return '--:--'
+  
+  // 检查是否已经是 HH:MM 格式
+  const timePattern = /^(\d{1,2}):(\d{2})$/
+  if (timePattern.test(time)) {
+    // 如果已经是 HH:MM 格式，直接返回（补齐小时位数）
+    const [hours, minutes] = time.split(':')
+    return `${String(parseInt(hours)).padStart(2, '0')}:${minutes}`
+  }
+  
+  // 尝试解析为日期时间格式
+  const date = new Date(time)
+  if (!isNaN(date.getTime())) {
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${hours}:${minutes}`
+  }
+  
+  // 如果是其他格式，尝试提取时间部分
+  const timeMatch = time.match(/(\d{1,2}):(\d{2})/)
+  if (timeMatch) {
+    const hours = String(parseInt(timeMatch[1])).padStart(2, '0')
+    const minutes = timeMatch[2]
+    return `${hours}:${minutes}`
+  }
+  
+  // 都不匹配则返回占位符
+  return '--:--'
 }
 
 const formatDate = (date: string) => {
+  if (!date) return '----/--/--'
+  
   const d = new Date(date)
+  if (isNaN(d.getTime())) {
+    console.warn('无效的日期格式:', date)
+    return '----/--/--'
+  }
+  
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  return `${date} ${weekdays[d.getDay()]}`
+  
+  // 如果输入已经是 YYYY-MM-DD 格式，直接使用
+  const datePattern = /^(\d{4})-(\d{1,2})-(\d{1,2})$/
+  if (datePattern.test(date)) {
+    return `${date} ${weekdays[d.getDay()]}`
+  }
+  
+  // 否则格式化为 YYYY-MM-DD 格式
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const formattedDate = `${year}-${month}-${day}`
+  
+  return `${formattedDate} ${weekdays[d.getDay()]}`
 }
 
 const handleClose = () => {
@@ -387,6 +434,12 @@ watch(
     }
   }
 )
+
+// 组件销毁时确保恢复滚动
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+  document.body.style.overflow = ''
+})
 </script>
 
 <style scoped>
