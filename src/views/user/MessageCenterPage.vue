@@ -378,7 +378,7 @@ const handleMarkRead = async (id: number) => {
     await messageStore.markAsRead(id)
   } catch (error) {
     console.error('标记已读失败:', error)
-    alert('标记已读失败,请稍后重试')
+    // 静默处理错误
   }
 }
 
@@ -386,15 +386,12 @@ const handleMarkRead = async (id: number) => {
  * 全部标记为已读
  */
 const handleMarkAllRead = async () => {
-  if (!confirm('确定要将所有消息标记为已读吗?')) {
-    return
-  }
-  
+  // 直接标记，不需要确认
   try {
     await messageStore.markAllAsRead()
   } catch (error) {
     console.error('全部标记已读失败:', error)
-    alert('操作失败,请稍后重试')
+    // 静默处理错误
   }
 }
 
@@ -402,16 +399,13 @@ const handleMarkAllRead = async () => {
  * 删除消息
  */
 const handleDelete = async (id: number) => {
-  if (!confirm('确定要删除这条消息吗?')) {
-    return
-  }
-  
+  // 直接删除，不需要确认
   try {
     await messageStore.deleteMessage(id)
     selectedMessages.value = selectedMessages.value.filter(msgId => msgId !== id)
   } catch (error) {
     console.error('删除消息失败:', error)
-    alert('删除失败,请稍后重试')
+    // 静默处理错误
   }
 }
 
@@ -419,16 +413,13 @@ const handleDelete = async (id: number) => {
  * 批量删除消息
  */
 const handleBatchDelete = async () => {
-  if (!confirm(`确定要删除选中的 ${selectedMessages.value.length} 条消息吗?`)) {
-    return
-  }
-  
+  // 直接批量删除，不需要确认
   try {
     await messageStore.batchDeleteMessages(selectedMessages.value)
     selectedMessages.value = []
   } catch (error) {
     console.error('批量删除失败:', error)
-    alert('删除失败,请稍后重试')
+    // 静默处理错误
   }
 }
 

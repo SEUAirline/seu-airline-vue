@@ -448,14 +448,13 @@ const handleSaveProfile = async () => {
   try {
     const response = await request.put('/user/profile', profileForm.value)
     if (response.success) {
-      alert('个人信息更新成功！')
+      // 更新成功，重新加载信息
       await loadUserInfo()
-    } else {
-      alert(response.message || '更新失败')
     }
+    // 失败静默处理
   } catch (error) {
     console.error('保存个人信息失败:', error)
-    alert('保存失败，请稍后重试')
+    // 静默处理错误
   }
 }
 
@@ -483,12 +482,20 @@ const loadOrderStats = async () => {
 // 加载未读消息数
 const loadUnreadCount = async () => {
   try {
+    // 检查是否已登录
+    const token = localStorage.getItem('token')
+    if (!token) {
+      unreadCount.value = 0
+      return
+    }
+    
     const response = await request.get('/messages/unread-count')
     if (response.success) {
       unreadCount.value = response.data || 0
     }
   } catch (error) {
     console.error('加载未读消息数失败:', error)
+    unreadCount.value = 0
   }
 }
 

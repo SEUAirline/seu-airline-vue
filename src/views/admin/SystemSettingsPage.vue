@@ -112,7 +112,7 @@ const settings = ref({
 })
 
 function handleSave() {
-  alert('设置已保存！')
+  console.log('设置已保存')
 }
 </script>
 

@@ -81,6 +81,16 @@ export const useMessageStore = defineStore('message', () => {
    * @param filter 筛选条件
    */
   const fetchMessages = async (filter?: MessageFilter) => {
+    // 检查用户是否已登录
+    const token = localStorage.getItem('token')
+    if (!token) {
+      // 未登录时不调用API
+      messages.value = []
+      total.value = 0
+      loading.value = false
+      return
+    }
+    
     loading.value = true
     try {
       const params = {

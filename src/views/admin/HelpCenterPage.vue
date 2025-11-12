@@ -79,7 +79,7 @@ const faqs = ref([
 
 function handleSearch() {}
 function handleCategoryClick(category: any) {
-  alert(`查看 ${category.title} 相关文档`)
+  console.log(`查看 ${category.title} 相关文档`)
 }
 function toggleFaq(id: number) {
   expandedFaq.value = expandedFaq.value === id ? null : id

@@ -102,6 +102,14 @@ export const announcementApi = {
    */
   getAnnouncementDetail: (id: number): Promise<ApiResponse<Announcement>> => {
     return request.get(`/announcements/${id}`)
+  },
+
+  /**
+   * 标记公告为已读
+   * @param id 公告ID
+   */
+  markAnnouncementAsRead: (id: number): Promise<ApiResponse<void>> => {
+    return request.put(`/announcements/${id}/read`)
   }
 }
 

@@ -63,10 +63,10 @@ async function handleLogin() {
   try {
     const result = await userStore.login(loginForm.value)
     if (result.success) {
-      alert('登录成功!')
+      // 登录成功，直接跳转，不显示弹窗
       router.push('/')
     } else {
-      alert(result.message || '登录失败')
+      console.error('登录失败:', result.message)
     }
   } finally {
     loading.value = false
