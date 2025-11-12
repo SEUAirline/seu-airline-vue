@@ -846,6 +846,9 @@ const handleSubmit = async () => {
 
 // 初始化
 onMounted(async () => {
+  // 确保页面可以正常滚动（修复从弹窗跳转过来时滚动被禁用的问题）
+  document.body.style.overflow = ''
+  
   const flightId = route.params.id as string
   loading.value = true
 
