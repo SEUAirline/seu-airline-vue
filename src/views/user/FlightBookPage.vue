@@ -618,7 +618,17 @@ const loadFrequentPassengers = async () => {
   try {
     const response = await request.get('/passengers')
     if (response.success) {
-      frequentPassengers.value = response.data || []
+      // 转换后端数据格式为前端期望的格式
+      frequentPassengers.value = (response.data || []).map((passenger: any) => ({
+        id: passenger.id,
+        name: passenger.passengerName,
+        idType: passenger.idType,
+        idNumber: passenger.idCard,
+        phone: passenger.phone,
+        email: passenger.email,
+        passengerType: passenger.passengerType?.toLowerCase() || 'adult',
+        isDefault: passenger.isDefault
+      }))
     }
   } catch (error) {
     console.error('加载常用旅客失败:', error)
@@ -677,7 +687,10 @@ const getPassengerTypeText = (type: string) => {
   const typeMap: Record<string, string> = {
     adult: '成人',
     child: '儿童',
-    infant: '婴儿'
+    infant: '婴儿',
+    ADULT: '成人',
+    CHILD: '儿童',
+    INFANT: '婴儿'
   }
   return typeMap[type] || type
 }

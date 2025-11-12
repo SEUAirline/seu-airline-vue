@@ -271,7 +271,10 @@ const getPassengerTypeText = (type: string) => {
   const typeMap: Record<string, string> = {
     adult: '成人',
     child: '儿童',
-    infant: '婴儿'
+    infant: '婴儿',
+    ADULT: '成人',
+    CHILD: '儿童',
+    INFANT: '婴儿'
   }
   return typeMap[type] || type
 }
@@ -282,7 +285,17 @@ const loadPassengers = async () => {
   try {
     const response = await request.get('/passengers')
     if (response.success) {
-      passengers.value = response.data || []
+      // 转换后端数据格式为前端期望的格式
+      passengers.value = (response.data || []).map((passenger: any) => ({
+        id: passenger.id,
+        name: passenger.passengerName,
+        idType: passenger.idType,
+        idNumber: passenger.idCard,
+        phone: passenger.phone,
+        email: passenger.email,
+        passengerType: passenger.passengerType?.toLowerCase() || 'adult',
+        isDefault: passenger.isDefault
+      }))
     }
   } catch (error) {
     console.error('加载旅客列表失败:', error)
@@ -310,13 +323,24 @@ const editPassenger = (passenger: any) => {
 const savePassenger = async () => {
   saving.value = true
   try {
+    // 转换前端表单数据为后端期望的格式
+    const backendData = {
+      passengerName: passengerForm.value.name,
+      idType: passengerForm.value.idType,
+      idCard: passengerForm.value.idNumber,
+      phone: passengerForm.value.phone,
+      email: passengerForm.value.email || null,
+      passengerType: passengerForm.value.passengerType.toUpperCase(),
+      isDefault: passengerForm.value.isDefault
+    }
+
     let response
     if (editingPassenger.value) {
       // 更新
-      response = await request.put(`/passengers/${editingPassenger.value.id}`, passengerForm.value)
+      response = await request.put(`/passengers/${editingPassenger.value.id}`, backendData)
     } else {
       // 新增
-      response = await request.post('/passengers', passengerForm.value)
+      response = await request.post('/passengers', backendData)
     }
 
     if (response.success) {
