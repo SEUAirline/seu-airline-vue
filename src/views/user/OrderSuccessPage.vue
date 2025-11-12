@@ -36,7 +36,7 @@
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-600">订单号</span>
-                <span class="font-medium text-gray-900">{{ order.orderNo }}</span>
+                <span class="font-medium text-gray-900">{{ order.orderNumber }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">航班号</span>
@@ -54,11 +54,11 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">乘客人数</span>
-                <span class="font-medium text-gray-900">{{ order.passengerCount }} 人</span>
+                <span class="font-medium text-gray-900">{{ order.passengers ? order.passengers.length : 0 }} 人</span>
               </div>
               <div class="flex justify-between pt-3 border-t border-gray-200">
                 <span class="text-gray-900 font-semibold">支付金额</span>
-                <span class="text-2xl font-bold text-green-600">¥{{ order.totalPrice }}</span>
+                <span class="text-2xl font-bold text-green-600">¥{{ order.totalAmount }}</span>
               </div>
             </div>
           </div>

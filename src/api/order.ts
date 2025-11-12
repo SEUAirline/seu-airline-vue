@@ -87,7 +87,9 @@ export const orderApi = {
 
   // 支付订单
   payOrder(params: PaymentParams): Promise<ApiResponse> {
-    return request.put(`/orders/${params.orderId}/pay`)
+    return request.put(`/orders/${params.orderId}/pay`, {
+      paymentMethod: params.paymentMethod
+    })
   },
 
   // 取消订单

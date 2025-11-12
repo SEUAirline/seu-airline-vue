@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { Order } from '@/types/order'
 
 interface Props {
@@ -158,8 +158,16 @@ function formatDateTime(dateStr: string): string {
 }
 
 // 格式化时间
-function formatTime(dateStr: string): string {
-  const date = new Date(dateStr)
+function formatTime(timeStr: string): string {
+  // 如果已经是 HH:mm 格式，直接返回
+  if (timeStr && /^\d{2}:\d{2}$/.test(timeStr)) {
+    return timeStr
+  }
+  // 否则尝试解析为日期
+  const date = new Date(timeStr)
+  if (isNaN(date.getTime())) {
+    return '--:--'
+  }
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
   return `${hours}:${minutes}`
@@ -176,8 +184,34 @@ function formatDate(dateStr: string): string {
 
 // 计算飞行时长
 function calculateDuration(departure: string, arrival: string): string {
+  // 如果是 HH:mm 格式，需要结合日期
+  if (/^\d{2}:\d{2}$/.test(departure) && /^\d{2}:\d{2}$/.test(arrival)) {
+    const [depHour, depMin] = departure.split(':').map(Number)
+    const [arrHour, arrMin] = arrival.split(':').map(Number)
+    
+    // 转换为分钟
+    let depMinutes = depHour * 60 + depMin
+    let arrMinutes = arrHour * 60 + arrMin
+    
+    // 如果到达时间小于出发时间，说明跨天了
+    if (arrMinutes < depMinutes) {
+      arrMinutes += 24 * 60
+    }
+    
+    const diff = arrMinutes - depMinutes
+    const hours = Math.floor(diff / 60)
+    const minutes = diff % 60
+    return `${hours}h${minutes}m`
+  }
+  
+  // 否则尝试解析为完整日期时间
   const dep = new Date(departure).getTime()
   const arr = new Date(arrival).getTime()
+  
+  if (isNaN(dep) || isNaN(arr)) {
+    return '--h--m'
+  }
+  
   const diff = arr - dep
   const hours = Math.floor(diff / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))

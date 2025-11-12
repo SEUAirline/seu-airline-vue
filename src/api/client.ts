@@ -32,8 +32,19 @@ client.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      const { status } = error.response
+      const { status, data } = error.response
+      console.error('请求错误详情:', {
+        status,
+        url: error.config?.url,
+        method: error.config?.method,
+        data: error.config?.data,
+        responseData: data
+      })
+      
       switch (status) {
+        case 400:
+          console.error('请求参数错误:', data?.message || data)
+          break
         case 401:
           // 未授权，清除token并跳转登录
           localStorage.removeItem('token')

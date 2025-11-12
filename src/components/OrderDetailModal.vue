@@ -71,7 +71,7 @@
                       <div class="text-center">
                         <div class="text-2xl font-bold text-gray-900">{{ formatTime(order.departureTime) }}</div>
                         <div class="text-sm text-gray-600 mt-1">{{ order.departureCity }}</div>
-                        <div class="text-xs text-gray-500 mt-1">{{ formatDate(order.departureTime) }}</div>
+                        <div class="text-xs text-gray-500 mt-1">{{ formatDate(order.date) }}</div>
                       </div>
 
                       <div class="flex-1 px-8">
@@ -91,7 +91,7 @@
                       <div class="text-center">
                         <div class="text-2xl font-bold text-gray-900">{{ formatTime(order.arrivalTime) }}</div>
                         <div class="text-sm text-gray-600 mt-1">{{ order.arrivalCity }}</div>
-                        <div class="text-xs text-gray-500 mt-1">{{ formatDate(order.arrivalTime) }}</div>
+                        <div class="text-xs text-gray-500 mt-1">{{ formatDate(order.date) }}</div>
                       </div>
                     </div>
 
@@ -380,7 +380,14 @@ function handleDownloadTicket() {
 
 // 工具函数
 function formatDateTime(dateStr: string): string {
+  if (!dateStr) return '----/--/-- --:--'
+  
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) {
+    console.warn('无效的日期时间格式:', dateStr)
+    return '----/--/-- --:--'
+  }
+  
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
@@ -390,14 +397,53 @@ function formatDateTime(dateStr: string): string {
 }
 
 function formatTime(dateStr: string): string {
+  if (!dateStr) return '--:--'
+  
+  // 检查是否已经是 HH:MM 格式
+  const timePattern = /^(\d{1,2}):(\d{2})$/
+  const timeMatch = dateStr.match(timePattern)
+  
+  if (timeMatch) {
+    // 如果已经是 HH:MM 格式，直接返回（补齐小时位数）
+    const hours = String(parseInt(timeMatch[1])).padStart(2, '0')
+    const minutes = timeMatch[2]
+    return `${hours}:${minutes}`
+  }
+  
+  // 尝试作为完整日期时间解析
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) {
+    console.warn('无效的时间格式:', dateStr)
+    return '--:--'
+  }
+  
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
   return `${hours}:${minutes}`
 }
 
 function formatDate(dateStr: string): string {
+  if (!dateStr) return '----/--/--'
+  
+  // 检查是否已经是 YYYY-MM-DD 格式
+  const datePattern = /^(\d{4})-(\d{1,2})-(\d{1,2})$/
+  const dateMatch = dateStr.match(datePattern)
+  
+  if (dateMatch) {
+    // 如果已经是 YYYY-MM-DD 格式，直接返回（补齐位数）
+    const year = dateMatch[1]
+    const month = String(parseInt(dateMatch[2])).padStart(2, '0')
+    const day = String(parseInt(dateMatch[3])).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  
+  // 尝试作为完整日期时间解析
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) {
+    console.warn('无效的日期格式:', dateStr)
+    return '----/--/--'
+  }
+  
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
@@ -405,11 +451,61 @@ function formatDate(dateStr: string): string {
 }
 
 function calculateDuration(departure: string, arrival: string): string {
-  const dep = new Date(departure).getTime()
-  const arr = new Date(arrival).getTime()
-  const diff = arr - dep
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  if (!departure || !arrival) return '--小时--分钟'
+  
+  // 解析 HH:MM 格式的时间
+  function parseTimeString(timeStr: string): { hours: number, minutes: number } | null {
+    const timePattern = /^(\d{1,2}):(\d{2})$/
+    const match = timeStr.match(timePattern)
+    if (match) {
+      return {
+        hours: parseInt(match[1]),
+        minutes: parseInt(match[2])
+      }
+    }
+    return null
+  }
+  
+  const depTime = parseTimeString(departure)
+  const arrTime = parseTimeString(arrival)
+  
+  if (!depTime || !arrTime) {
+    // 如果不是 HH:MM 格式，尝试作为完整日期时间解析
+    const depDate = new Date(departure)
+    const arrDate = new Date(arrival)
+    
+    if (isNaN(depDate.getTime()) || isNaN(arrDate.getTime())) {
+      console.warn('无效的时间格式:', { departure, arrival })
+      return '--小时--分钟'
+    }
+    
+    const dep = depDate.getTime()
+    const arr = arrDate.getTime()
+    const diff = arr - dep
+    
+    if (diff < 0) {
+      console.warn('到达时间早于出发时间:', { departure, arrival })
+      return '--小时--分钟'
+    }
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    return `${hours}小时${minutes}分钟`
+  }
+  
+  // 计算 HH:MM 格式时间的差值
+  const depMinutes = depTime.hours * 60 + depTime.minutes
+  let arrMinutes = arrTime.hours * 60 + arrTime.minutes
+  
+  // 如果到达时间小于出发时间，假设是跨天航班
+  if (arrMinutes < depMinutes) {
+    arrMinutes += 24 * 60 // 加一天
+  }
+  
+  const diffMinutes = arrMinutes - depMinutes
+  const hours = Math.floor(diffMinutes / 60)
+  const minutes = diffMinutes % 60
+  
   return `${hours}小时${minutes}分钟`
 }
 

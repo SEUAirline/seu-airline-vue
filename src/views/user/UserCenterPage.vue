@@ -158,7 +158,7 @@
               <div class="flex items-center space-x-4">
                 <div class="text-center">
                   <div class="text-lg font-bold text-gray-900">{{ order.departureCity }}</div>
-                  <div class="text-xs text-gray-500">{{ order.departureTime?.split(' ')[1]?.substring(0, 5) }}</div>
+                  <div class="text-xs text-gray-500">{{ order.departureTime || '--:--' }}</div>
                 </div>
                 <div class="flex flex-col items-center">
                   <i class="fas fa-plane text-blue-600 text-sm"></i>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="text-center">
                   <div class="text-lg font-bold text-gray-900">{{ order.arrivalCity }}</div>
-                  <div class="text-xs text-gray-500">{{ order.arrivalTime?.split(' ')[1]?.substring(0, 5) }}</div>
+                  <div class="text-xs text-gray-500">{{ order.arrivalTime || '--:--' }}</div>
                 </div>
               </div>
               <div class="text-right">
