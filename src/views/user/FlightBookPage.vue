@@ -409,7 +409,9 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFlightStore } from '@/stores/flight'
 import { useOrderStore } from '@/stores/order'
+import { useUserStore } from '@/stores/user'
 import { request } from '@/api/client'
+import { flightApi } from '@/api/flight'
 import type { Flight } from '@/types/flight'
 import AppHeader from '@/components/AppHeader.vue'
 import { formatTime, formatDate } from '@/utils/format'
@@ -421,6 +423,7 @@ const route = useRoute()
 const router = useRouter()
 const flightStore = useFlightStore()
 const orderStore = useOrderStore()
+const userStore = useUserStore()
 
 // 状态
 const loading = ref(true)
@@ -844,19 +847,49 @@ const handleSubmit = async () => {
 // 初始化
 onMounted(async () => {
   const flightId = route.params.id as string
+  loading.value = true
 
-  // 尝试从 store 获取航班信息
-  const flight = flightStore.searchResults.find(f => f.id === flightId)
+  try {
+    // 首先尝试从 store 获取航班信息
+    let flight = flightStore.searchResults.find(f => f.id === flightId)
 
-  if (flight) {
-    selectedFlight.value = flight
-  } else {
-    // 如果 store 中没有，尝试通过 API 获取（这里Mock暂时不实现）
-    // 在实际项目中应该调用 API
-    console.warn('未找到航班信息，实际项目中应调用API获取')
+    if (!flight) {
+      // 如果 store 中没有，从后端 API 获取
+      console.log('从API获取航班信息:', flightId)
+      try {
+        const response = await flightApi.getFlightById(flightId)
+        if (response.success && response.data) {
+          flight = response.data
+          console.log('成功从API获取航班:', flight)
+        }
+      } catch (error) {
+        console.error('从API获取航班失败:', error)
+      }
+    }
+
+    if (flight) {
+      selectedFlight.value = flight
+    } else {
+      console.warn('未找到航班信息，航班ID:', flightId)
+    }
+
+    // 从 store 获取当前用户信息并填充第一个乘客
+    const currentUser = userStore.currentUser
+    if (currentUser && passengers.value.length > 0) {
+      passengers.value[0] = {
+        name: currentUser.fullName || '',
+        idType: 'idCard',
+        idCard: currentUser.idCard || '',
+        phone: currentUser.phone || '',
+        passengerType: 'adult'
+      }
+      console.log('已自动填充第一个乘客信息:', passengers.value[0])
+    }
+  } catch (error) {
+    console.error('页面初始化失败:', error)
+  } finally {
+    loading.value = false
   }
-
-  loading.value = false
 })
 </script>
 

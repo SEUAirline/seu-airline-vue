@@ -60,7 +60,8 @@ export const orderApi = {
           seatId: availableSeats[index].id,
           passengerName: passenger.name,
           passengerIdCard: passenger.idCard
-        }))
+        })),
+        totalAmount: params.totalPrice  // 传递前端计算的总金额(包含额外服务费用)
       }
 
       // 创建订单

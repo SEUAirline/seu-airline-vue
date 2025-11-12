@@ -38,6 +38,8 @@ export interface OrderCreateParams {
   contactName: string
   contactPhone: string
   contactEmail: string
+  totalPrice?: number  // 总金额(包含基础票价+额外服务费用)
+  services?: any  // 额外服务信息
 }
 
 export interface PaymentParams {

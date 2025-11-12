@@ -1,5 +1,13 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <!-- Toast 通知 -->
+    <Toast 
+      :message="toast.message" 
+      :type="toast.type" 
+      :show="toast.show"
+      @update:show="toast.show = $event"
+    />
+    
     <!-- 顶部导航栏 -->
     <AppHeader />
     
@@ -92,7 +100,20 @@
         <div class="flex-1">
           <!-- 个人信息标签页 -->
           <div v-if="activeTab === 'info'" class="bg-white rounded-lg shadow-sm p-5 border border-gray-100 mb-6">
-            <h2 class="text-xl font-medium mb-4">基本信息</h2>
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-xl font-medium">基本信息</h2>
+              <button
+                v-if="!isEditing"
+                @click="startEdit"
+                class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-all duration-300 flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                编辑资料
+              </button>
+            </div>
+            
             <form @submit.prevent="handleSaveProfile">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
@@ -100,7 +121,13 @@
                   <input
                     v-model="profileForm.fullName"
                     type="text"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    :disabled="!isEditing"
+                    :class="[
+                      'w-full px-4 py-2 border rounded-md transition-all',
+                      isEditing 
+                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white' 
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    ]"
                   />
                 </div>
                 <div>
@@ -108,7 +135,13 @@
                   <input
                     v-model="profileForm.idCard"
                     type="text"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    :disabled="!isEditing"
+                    :class="[
+                      'w-full px-4 py-2 border rounded-md transition-all',
+                      isEditing 
+                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white' 
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    ]"
                   />
                 </div>
                 <div>
@@ -116,7 +149,13 @@
                   <input
                     v-model="profileForm.phone"
                     type="tel"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    :disabled="!isEditing"
+                    :class="[
+                      'w-full px-4 py-2 border rounded-md transition-all',
+                      isEditing 
+                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white' 
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    ]"
                   />
                 </div>
                 <div>
@@ -124,7 +163,13 @@
                   <input
                     v-model="profileForm.email"
                     type="email"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    :disabled="!isEditing"
+                    :class="[
+                      'w-full px-4 py-2 border rounded-md transition-all',
+                      isEditing 
+                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white' 
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    ]"
                   />
                 </div>
                 <div>
@@ -135,6 +180,7 @@
                         v-model="profileForm.gender"
                         type="radio"
                         value="male"
+                        :disabled="!isEditing"
                         class="text-primary focus:ring-primary"
                       />
                       <span class="ml-2">男</span>
@@ -144,6 +190,7 @@
                         v-model="profileForm.gender"
                         type="radio"
                         value="female"
+                        :disabled="!isEditing"
                         class="text-primary focus:ring-primary"
                       />
                       <span class="ml-2">女</span>
@@ -155,13 +202,32 @@
                   <input
                     v-model="profileForm.birthday"
                     type="date"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    :disabled="!isEditing"
+                    :class="[
+                      'w-full px-4 py-2 border rounded-md transition-all',
+                      isEditing 
+                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white' 
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    ]"
                   />
                 </div>
               </div>
-              <div class="flex justify-end">
-                <button type="button" class="bg-white text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-300 mr-3">取消</button>
-                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-all duration-300">保存修改</button>
+              
+              <!-- 编辑模式下显示操作按钮 -->
+              <div v-if="isEditing" class="flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  @click="cancelEdit"
+                  class="bg-white text-gray-600 border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-50 transition-all duration-300"
+                >
+                  取消
+                </button>
+                <button 
+                  type="submit" 
+                  class="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90 transition-all duration-300"
+                >
+                  保存修改
+                </button>
               </div>
             </form>
           </div>
@@ -344,19 +410,20 @@
             >
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-3">
-                  <span class="text-sm font-medium text-gray-900">订单号: {{ order.orderNo }}</span>
+                  <span class="text-sm font-medium text-gray-900">订单号: {{ order.orderNumber }}</span>
                   <span
                     :class="[
                       'px-2 py-1 text-xs rounded-full',
-                      order.status === 0 ? 'bg-orange-100 text-orange-700' :
-                      order.status === 1 ? 'bg-green-100 text-green-700' :
+                      order.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                      order.status === 'paid' ? 'bg-green-100 text-green-700' :
+                      order.status === 'completed' ? 'bg-blue-100 text-blue-700' :
                       'bg-gray-100 text-gray-700'
                     ]"
                   >
                     {{ getOrderStatusText(order.status) }}
                   </span>
                 </div>
-                <span class="text-lg font-bold text-blue-600">¥{{ order.totalPrice }}</span>
+                <span class="text-lg font-bold text-blue-600">¥{{ order.totalAmount }}</span>
               </div>
               <div class="flex items-center justify-between text-sm text-gray-600">
                 <div>
@@ -383,13 +450,18 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { request } from '@/api/client'
+import { orderApi } from '@/api/order'
+import { useUserStore } from '@/stores/user'
 import AppHeader from '@/components/AppHeader.vue'
+import Toast from '@/components/Toast.vue'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 // 状态
 const loading = ref(true)
 const activeTab = ref('info') // 当前激活的标签页
+const isEditing = ref(false) // 是否处于编辑模式
 const userInfo = ref<any>({})
 const orderStats = ref({
   total: 0,
@@ -401,6 +473,22 @@ const orderStats = ref({
 const recentOrders = ref<any[]>([])
 const unreadCount = ref(0)
 
+// Toast 通知状态
+const toast = ref({
+  show: false,
+  message: '',
+  type: 'info' as 'success' | 'error' | 'warning' | 'info'
+})
+
+// 显示提示消息
+const showToast = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
+  toast.value = {
+    show: true,
+    message,
+    type
+  }
+}
+
 // 个人信息表单
 const profileForm = ref({
   fullName: '',
@@ -411,13 +499,39 @@ const profileForm = ref({
   birthday: ''
 })
 
+// 原始数据备份（用于取消编辑时恢复）
+const originalData = ref({
+  fullName: '',
+  idCard: '',
+  phone: '',
+  email: '',
+  gender: 'male',
+  birthday: ''
+})
+
+// 开始编辑
+const startEdit = () => {
+  isEditing.value = true
+  // 备份当前数据
+  originalData.value = { ...profileForm.value }
+}
+
+// 取消编辑
+const cancelEdit = () => {
+  isEditing.value = false
+  // 恢复原始数据
+  profileForm.value = { ...originalData.value }
+  showToast('已取消修改', 'info')
+}
+
 // 获取订单状态文本
-const getOrderStatusText = (status: number) => {
-  const statusMap: Record<number, string> = {
-    0: '待支付',
-    1: '已支付',
-    2: '已完成',
-    3: '已取消'
+const getOrderStatusText = (status: string) => {
+  const statusMap: Record<string, string> = {
+    'pending': '待支付',
+    'paid': '已支付',
+    'completed': '已完成',
+    'cancelled': '已取消',
+    'refunded': '已退款'
   }
   return statusMap[status] || '未知'
 }
@@ -425,11 +539,34 @@ const getOrderStatusText = (status: number) => {
 // 加载用户信息
 const loadUserInfo = async () => {
   try {
+    // 优先从 store 获取用户信息
+    const storeUser = userStore.currentUser
+    if (storeUser) {
+      userInfo.value = storeUser
+      // 填充表单
+      const formData = {
+        fullName: storeUser.fullName || '',
+        idCard: storeUser.idCard || '',
+        phone: storeUser.phone || '',
+        email: storeUser.email || '',
+        gender: (storeUser as any).gender || 'male',
+        birthday: (storeUser as any).birthday || ''
+      }
+      profileForm.value = formData
+      // 同时备份原始数据
+      originalData.value = { ...formData }
+      return
+    }
+
+    // 如果 store 中没有，才从 API 获取（这种情况应该很少发生）
+    console.log('Store中没有用户信息，从API获取')
     const response = await request.get('/user/profile')
     if (response.success) {
       userInfo.value = response.data
+      // 更新 store
+      userStore.updateUser(response.data)
       // 填充表单
-      profileForm.value = {
+      const formData = {
         fullName: response.data.fullName || '',
         idCard: response.data.idCard || '',
         phone: response.data.phone || '',
@@ -437,6 +574,9 @@ const loadUserInfo = async () => {
         gender: response.data.gender || 'male',
         birthday: response.data.birthday || ''
       }
+      profileForm.value = formData
+      // 同时备份原始数据
+      originalData.value = { ...formData }
     }
   } catch (error) {
     console.error('加载用户信息失败:', error)
@@ -448,28 +588,33 @@ const handleSaveProfile = async () => {
   try {
     const response = await request.put('/user/profile', profileForm.value)
     if (response.success) {
-      // 更新成功，重新加载信息
+      // 更新 store 中的用户信息
+      userStore.updateUser(profileForm.value)
+      // 重新加载信息（从 store）
       await loadUserInfo()
+      isEditing.value = false // 退出编辑模式
+      showToast('个人信息保存成功', 'success')
+    } else {
+      showToast(response.message || '保存失败', 'error')
     }
-    // 失败静默处理
-  } catch (error) {
+  } catch (error: any) {
     console.error('保存个人信息失败:', error)
-    // 静默处理错误
+    showToast(error.response?.data?.message || error.message || '网络错误', 'error')
   }
 }
 
 // 加载订单统计
 const loadOrderStats = async () => {
   try {
-    const response = await request.get('/user/orders', { params: { pageSize: 100 } })
+    const response = await orderApi.getUserOrders()
     if (response.success) {
-      const orders = response.data.list || []
+      const orders = response.data || []
       orderStats.value = {
         total: orders.length,
-        pending: orders.filter((o: any) => o.status === 0).length,
-        paid: orders.filter((o: any) => o.status === 1).length,
-        completed: orders.filter((o: any) => o.status === 2).length,
-        cancelled: orders.filter((o: any) => o.status === 3).length
+        pending: orders.filter((o: any) => o.status === 'pending').length,
+        paid: orders.filter((o: any) => o.status === 'paid').length,
+        completed: orders.filter((o: any) => o.status === 'completed').length,
+        cancelled: orders.filter((o: any) => o.status === 'cancelled').length
       }
       // 获取最近3个订单
       recentOrders.value = orders.slice(0, 3)

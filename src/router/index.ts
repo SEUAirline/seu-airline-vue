@@ -178,12 +178,17 @@ const router = createRouter({
 })
 
 // 路由守卫
-router.beforeEach((to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
+router.beforeEach(async (to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const userStore = useUserStore()
   const adminStore = useAdminStore()
 
   // 设置页面标题
   document.title = `${to.meta.title || 'SEUAirline'} - SEUAirline航空预订系统`
+
+  // 如果有token但用户信息不完整（比如缺少idCard），尝试刷新用户信息
+  if (userStore.token && userStore.currentUser && !userStore.currentUser.idCard) {
+    await userStore.fetchUserProfile()
+  }
 
   // 用户认证检查
   if (to.meta.requiresAuth && !userStore.isAuthenticated) {

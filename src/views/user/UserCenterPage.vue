@@ -196,11 +196,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import AppHeader from '@/components/AppHeader.vue'
 import type { Order } from '@/types/order'
 import { orderApi } from '@/api/order'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 // 用户信息
 const userInfo = ref<any>(null)
@@ -258,15 +260,21 @@ const quickMenus = [
 ]
 
 // 加载用户信息
-function loadUserInfo() {
-  // 从localStorage获取用户信息
-  const userStr = localStorage.getItem('user')
-  if (userStr) {
-    try {
-      userInfo.value = JSON.parse(userStr)
-    } catch (error) {
-      console.error('解析用户信息失败:', error)
+async function loadUserInfo() {
+  // 直接从 store 获取用户信息
+  const storeUser = userStore.currentUser
+  if (storeUser) {
+    userInfo.value = {
+      name: storeUser.fullName || storeUser.username,
+      username: storeUser.username,
+      idCard: storeUser.idCard,
+      phone: storeUser.phone,
+      email: storeUser.email,
+      avatar: null
     }
+    console.log('从 Store 加载用户信息:', userInfo.value)
+  } else {
+    console.warn('Store 中没有用户信息')
   }
 }
 

@@ -206,7 +206,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { request } from '@/api/client'
+import { useUserStore } from '@/stores/user'
 import AppHeader from '@/components/AppHeader.vue'
+
+const userStore = useUserStore()
 
 // 状态
 const currentTab = ref('profile')
@@ -236,20 +239,20 @@ const passwordForm = ref({
 
 // 加载用户信息
 const loadUserInfo = async () => {
-  try {
-    const response = await request.get('/user/profile')
-    if (response.success) {
-      profileForm.value = {
-        nickname: response.data.nickname || '',
-        avatar: response.data.avatar || '',
-        gender: response.data.gender || 'male',
-        birthday: response.data.birthday || '',
-        phone: response.data.phone || '',
-        email: response.data.email || ''
-      }
+  // 直接从 store 获取用户信息
+  const storeUser = userStore.currentUser
+  if (storeUser) {
+    profileForm.value = {
+      nickname: (storeUser as any).nickname || '',
+      avatar: (storeUser as any).avatar || '',
+      gender: (storeUser as any).gender || 'male',
+      birthday: (storeUser as any).birthday || '',
+      phone: storeUser.phone || '',
+      email: storeUser.email || ''
     }
-  } catch (error) {
-    console.error('加载用户信息失败:', error)
+    console.log('从 Store 加载用户信息')
+  } else {
+    console.warn('Store 中没有用户信息')
   }
 }
 
@@ -258,6 +261,9 @@ const saveProfile = async () => {
   saving.value = true
   try {
     await request.put('/user/profile', profileForm.value)
+    // 更新 store 中的用户信息
+    userStore.updateUser(profileForm.value)
+    console.log('个人信息保存成功')
     // 保存成功或失败都静默处理
   } catch (error) {
     console.error('保存失败:', error)
