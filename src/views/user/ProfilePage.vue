@@ -588,10 +588,11 @@ const handleSaveProfile = async () => {
   try {
     const response = await request.put('/user/profile', profileForm.value)
     if (response.success) {
-      // 更新 store 中的用户信息
-      userStore.updateUser(profileForm.value)
-      // 重新加载信息（从 store）
-      await loadUserInfo()
+      // 使用后端返回的完整用户信息更新 store
+      if (response.data) {
+        userStore.updateUser(response.data)
+        userInfo.value = response.data
+      }
       isEditing.value = false // 退出编辑模式
       showToast('个人信息保存成功', 'success')
     } else {
