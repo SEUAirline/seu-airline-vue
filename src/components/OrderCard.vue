@@ -111,8 +111,9 @@
             <i class="fas fa-ticket-alt mr-1"></i>再次预订
           </button>
           
+          <!-- 只有待支付状态才能取消订单 -->
           <button
-            v-if="order.status === 'pending' || order.status === 'paid'"
+            v-if="order.status === 'pending'"
             @click="$emit('cancel', order.id)"
             class="px-3 py-1 text-sm bg-white text-red-600 border border-red-300 rounded-md hover:bg-red-50 transition-all"
           >

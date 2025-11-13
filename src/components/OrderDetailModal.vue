@@ -248,8 +248,9 @@
                   >
                     立即支付
                   </button>
+                  <!-- 只有待支付状态才能取消订单 -->
                   <button
-                    v-if="order.status === 'pending' || order.status === 'paid'"
+                    v-if="order.status === 'pending'"
                     @click="handleCancel"
                     class="px-4 py-2 bg-white text-red-600 border border-red-300 rounded-md hover:bg-red-50 transition-all"
                   >
